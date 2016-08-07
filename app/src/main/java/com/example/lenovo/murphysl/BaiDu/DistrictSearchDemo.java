@@ -82,7 +82,6 @@ public class DistrictSearchDemo extends Activity implements OnGetDistricSearchRe
             }
             mBaiduMap.setMapStatus(MapStatusUpdateFactory
                                    .newLatLngBounds(builder.build()));
-            
         }
     }
     
