@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:my_tools="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <com.example.lenovo.murphysl.UI.ArcMenu
+        android:id="@+id/id_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        my_tools:position="left_bottom"
+        my_tools:radius="200dp"
+        >
+        <!--主按钮-->
+        <RelativeLayout
+            android:background="@drawable/composer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/id_buttom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/composer_icn_plus"
+                />
+        </RelativeLayout>
+
+        <ImageView
+            android:src="@drawable/composer_place"
+            android:tag="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/composer_place"
+            android:tag="2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/composer_place"
+            android:tag="3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/composer_place"
+            android:tag="4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/composer_place"
+            android:tag="5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/composer_place"
+            android:tag="6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </com.example.lenovo.murphysl.UI.ArcMenu>
+
+</LinearLayout>

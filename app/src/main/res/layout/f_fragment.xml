@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_location"
+        android:hint="位置信息"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_num"
+        android:hint="附近的人"
+        android:text="0"
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+   <Button
+       android:id="@+id/bt_loc"
+       android:layout_gravity="center_horizontal"
+       android:text="开启定位"
+       android:layout_width="100dp"
+       android:layout_height="wrap_content" />
+
+</LinearLayout>

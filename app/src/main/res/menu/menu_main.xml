@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_map"
+        android:title="打开地图"/>
+
+    <item
+        android:id="@+id/action_map_option"
+        android:title="地图设置"/>
+
+    <item
+        android:id="@+id/action_map_notify"
+        android:title="位置提醒"/>
+
+
+</menu>

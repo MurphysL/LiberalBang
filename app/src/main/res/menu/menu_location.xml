@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+     <item
+        android:id="@+id/action_map_common"
+        android:title="普通地图"/>
+
+    <item
+        android:id="@+id/action_map_site"
+        android:title="卫星地图"/>
+
+    <item
+        android:id="@+id/action_map_traffic"
+        android:title="实时交通(off)"/>
+
+    <item
+        android:id="@+id/action_map_none"
+        android:title="空白地图"/>
+
+    <item
+        android:id="@+id/action_map_heat"
+        android:title="热力地图(off)"/>
+
+    <item
+        android:id="@+id/action_map_location"
+        android:title="我的位置"/>
+
+    <item
+        android:id="@+id/action_map_radar"
+        android:title="周边的人(off)"/>
+
+</menu>
