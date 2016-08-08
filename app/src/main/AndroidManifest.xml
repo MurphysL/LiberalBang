@@ -47,22 +47,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MapActivity">
-
-        </activity>
+        <activity android:name=".MapActivity"/>
         <activity android:name=".Map.LocationOption"/>
         <activity android:name=".Map.NotifyActivity"/>
-        <activity android:name=".BaiDu.PoiSearchDemo">
+        <activity android:name=".Map.RadarDemo">
 
         </activity>
 
-        <activity android:name=".BaiDu.RoutePlanDemo">
-
-        </activity>
-        <activity android:name=".BaiDu.ShareDemoActivity">
-
-        </activity>
-        <activity android:name=".BaiDu.DistrictSearchDemo"/>
     </application>
 
 </manifest>

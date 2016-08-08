@@ -30,6 +30,7 @@ import java.util.List;
  * @time: 2016/8/5 0:00
  */
 
+/*
 public class Radar {
     private static final String TAG = "Radar";
     //雷达
@@ -46,18 +47,20 @@ public class Radar {
     public Radar(Context radarContext , LatLng latLng) {
         manager = RadarSearchManager.getInstance();
         myRadarUploadInfoCallback = new MyRadarUploadInfoCallback();
-
+        registerRadarListener()
         manager.setUserID(userID);//设置用户,id为空默认为设备标识
 
         this.latLng = latLng;
         this.radarContext = radarContext;
     }
 
-    /**
+    */
+/**
      * 注册监听器
      * @param listener
      * @return
-     */
+     *//*
+
     public boolean registerRadarListener(RadarSearchListener listener){
         boolean isSuccess = false;
         if(listener != null){
@@ -67,19 +70,23 @@ public class Radar {
         return  isSuccess;
     }
 
-    /**
+    */
+/**
      * 解除监听器
      * @param listener
-     */
+     *//*
+
     public void unregisterRadarListener(RadarSearchListener listener){
         if(listener != null){
             manager.removeNearbyInfoListener(listener);
         }
     }
 
-    /**
+    */
+/**
      * 开始自动上传
-     */
+     *//*
+
     public void uploadContinueClick() {
         if (latLng == null) {
             Toast.makeText(radarContext , "未获取到位置", Toast.LENGTH_LONG).show();
@@ -87,31 +94,41 @@ public class Radar {
         }
         //uploadAuto = true;
         manager.startUploadAuto(myRadarUploadInfoCallback, 5000);
-        /*uploadContinue.setEnabled(false);
+        */
+/*uploadContinue.setEnabled(false);
         stopUpload.setEnabled(true);
-        clearInfoBtn.setEnabled(true);*/
+        clearInfoBtn.setEnabled(true);*//*
+
     }
 
-    /**
+    */
+/**
      * 停止自动上传
-     */
+     *//*
+
     public void stopUploadClick() {
         //uploadAuto = false;
         RadarSearchManager.getInstance().stopUploadAuto();
-       /* stopUpload.setEnabled(false);
-        uploadContinue.setEnabled(true);*/
+       */
+/* stopUpload.setEnabled(false);
+        uploadContinue.setEnabled(true);*//*
+
     }
 
-    /**
+    */
+/**
      * 清除自己当前的信息
-     */
+     *//*
+
     public void clearInfoClick() {
         manager.clearUserInfo();
     }
 
-    /**
+    */
+/**
      * 查找周边的人
-     */
+     *//*
+
     public void searchNearby() {
         if (latLng == null) {
             Toast.makeText(radarContext, "未获取到位置", Toast.LENGTH_LONG).show();
@@ -148,3 +165,4 @@ public class Radar {
 
 
 }
+*/

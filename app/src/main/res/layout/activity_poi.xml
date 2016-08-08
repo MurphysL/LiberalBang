@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:id="@+id/poisearch"
+    android:visibility="gone"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -18,21 +22,19 @@
         <EditText
             android:id="@+id/city"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="北京" />
+            android:layout_height="match_parent" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="市内找" >
+            android:text="市 内找" >
         </TextView>
 
         <AutoCompleteTextView
             android:id="@+id/searchkey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.88"
-            android:text="餐厅" />
+            android:layout_weight="0.88" />
     </LinearLayout>
 
     <LinearLayout
@@ -46,7 +48,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="12"
-            android:onClick="searchButtonProcess"
+            android:onClick="searchPoiButtonProcess"
             android:padding="10dip"
             android:text="开始" />
 
@@ -58,12 +60,17 @@
             android:onClick="goToNextPage"
             android:padding="10dip"
             android:text="下一组数据" />
+
     </LinearLayout>
 
-    <fragment
+
+
+
+
+    <!--<fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.baidu.mapapi.map.SupportMapFragment" />
+        class="com.baidu.mapapi.map.SupportMapFragment" />-->
 
 </LinearLayout>

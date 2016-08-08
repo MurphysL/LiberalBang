@@ -4,82 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <com.baidu.mapapi.map.MapView
-            android:id="@+id/bmapView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:clickable="true" />
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clickable="true" />
 
-       <!-- <LinearLayout
-            android:id="@+id/poi_search"
-            android:visibility="gone"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-                <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dip"
-                    android:orientation="horizontal" >
+    <include layout="@layout/activity_poi"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="在" >
-                        </TextView>
+    <include layout="@layout/activity_routeplan"/>
 
-                        <EditText
-                            android:id="@+id/city"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="太原" />
+    <include layout="@layout/arc_menu"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="市内找" >
-                        </TextView>
-
-                        <AutoCompleteTextView
-                            android:id="@+id/searchkey"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.88"
-                            android:text="餐厅" />
-                </LinearLayout>
-
-                <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dip"
-                    android:orientation="horizontal" >
-
-                        <Button
-                            android:id="@+id/search"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="12"
-                            android:onClick="searchButtonProcess"
-                            android:padding="10dip"
-                            android:text="开始" />
-
-                        <Button
-                            android:id="@+id/map_next_data"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="12"
-                            android:onClick="goToNextPage"
-                            android:padding="10dip"
-                            android:text="下一组数据" />
-                </LinearLayout>
-        </LinearLayout>-->
-
-        <!--<include layout="@layout/activity_poisearch"/>-->
-
-
-        <include layout="@layout/arc_menu"/>
-
-
-
+    <include layout="@layout/activity_radarmap"/>
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.example.lenovo.murphysl.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -16,6 +17,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.Poi;
 import com.example.lenovo.murphysl.Map.Location;
 import com.example.lenovo.murphysl.Map.LocationApplication;
+import com.example.lenovo.murphysl.Map.RadarDemo;
 import com.example.lenovo.murphysl.R;
 
 /**
@@ -31,8 +33,9 @@ public class FirstFragment extends Fragment {
 
     private Location location;
 
-    private TextView tv_location , tv_num;
+    private TextView tv_location ;
     private Button startLocation;
+    private Button startRadar;
 
     private String loc;
 
@@ -58,8 +61,8 @@ public class FirstFragment extends Fragment {
 
     private void initView(View view){
         tv_location = (TextView) view.findViewById(R.id.tv_location);
-        tv_num = (TextView) view.findViewById(R.id.tv_num);
         startLocation = (Button) view.findViewById(R.id.bt_loc);
+        startRadar = (Button) view.findViewById(R.id.bt_radar);
     }
 
     @Override
@@ -87,6 +90,13 @@ public class FirstFragment extends Fragment {
                     startLocation.setText("开启定位");
                     flag = true;
                 }
+            }
+        });
+
+        startRadar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(FirstFragment.this.getContext() , RadarDemo.class));
             }
         });
 
