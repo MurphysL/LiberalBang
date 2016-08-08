@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 adapter.notifyDataSetChanged();
                 handler.postDelayed(runnable , 1000);
             }
-
         }
     };
 
