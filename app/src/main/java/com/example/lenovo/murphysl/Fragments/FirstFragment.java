@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import com.example.lenovo.murphysl.Map.Location;
 import com.example.lenovo.murphysl.Map.LocationApplication;
 import com.example.lenovo.murphysl.Map.RadarDemo;
 import com.example.lenovo.murphysl.R;
+import com.example.lenovo.murphysl.BackHandledFragment;
 
 /**
  * FirstFragment
@@ -28,7 +28,7 @@ import com.example.lenovo.murphysl.R;
  * @time: 2016/8/4 18:49
  */
 
-public class FirstFragment extends Fragment {
+public class FirstFragment extends BackHandledFragment {
     private static final String TAG = "FirstFragment";
 
     private Location location;
@@ -63,6 +63,11 @@ public class FirstFragment extends Fragment {
         tv_location = (TextView) view.findViewById(R.id.tv_location);
         startLocation = (Button) view.findViewById(R.id.bt_loc);
         startRadar = (Button) view.findViewById(R.id.bt_radar);
+    }
+
+    @Override
+    protected boolean onBackPressed() {
+        return false;
     }
 
     @Override

@@ -6,8 +6,10 @@ import android.content.Intent;
 
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,10 +17,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.example.lenovo.murphysl.Fragments.FirstFragment;
-import com.example.lenovo.murphysl.Fragments.TestFThree;
+import com.example.lenovo.murphysl.Fragments.FourthFragment;
+import com.example.lenovo.murphysl.Fragments.ThirdFragment;
 import com.example.lenovo.murphysl.Fragments.TestFTwo;
 import com.example.lenovo.murphysl.Map.LocationOption;
 import com.example.lenovo.murphysl.Map.NotifyActivity;
@@ -27,24 +31,53 @@ import com.example.lenovo.murphysl.UI.ChangeColorIconWithText;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener , ViewPager.OnPageChangeListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener , ViewPager.OnPageChangeListener ,BackHandledInterface {
     private static final String TAG = "MainActivity";
 
     private SDKReceiver mReceiver;
 
     private ViewPager mViewPager;
+    private boolean[] fragmentsUpdateFlag = { false, false, false, false };
     private List<Fragment> list = new ArrayList<Fragment>();
 
     private List<ChangeColorIconWithText> mTabIndicators = new ArrayList<ChangeColorIconWithText>();
 
-    private Handler handler = new Handler();
+    private BackHandledFragment mBackHandedFragment;
+
+   /* private Handler handler = new Handler();
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
             if(FirstFragment.flag){
                 adapter.notifyDataSetChanged();
-                handler.postDelayed(runnable , 1000);
+                handler.postDelayed(runnable , 500);
+            }
+        }
+    };*/
+
+    public Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    fragmentsUpdateFlag[0] = true;
+                    adapter.notifyDataSetChanged();
+                    break;
+                case 2:
+                    fragmentsUpdateFlag[0] = true;
+                    adapter.notifyDataSetChanged();
+                    break;
+                case 3:
+                    fragmentsUpdateFlag[2] = true;
+                    adapter.notifyDataSetChanged();
+                    break;
+                case 4:
+                    fragmentsUpdateFlag[2] = true;
+                    adapter.notifyDataSetChanged();
+                    break;
+                default:
             }
         }
     };
@@ -64,43 +97,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-        /**
-         * 获取Fragment对象
-         * @param position
-         * @return
-         */
+
         @Override
         public Fragment getItem(int position) {
-           /* Fragment f = new Fragment();
-            return f;*/
-            return list.get(position);
+            Fragment fragment = list.get(position);
+            Log.i(TAG, "getItem:position=" + position + ",fragment:" + fragment.getClass().getName() + ",fragment.tag=" + fragment.getTag());
+            return fragment;
         }
 
-        /**
-         * 刷新页面
-         //* @param container
-         //* @param position
-         * @return
-         */
-       /* @Override
+        @Override
         public Object instantiateItem(ViewGroup container, int position) {
             //得到缓存的Fragment
             Fragment f = (Fragment) super.instantiateItem(container , position);
             String Tag = f.getTag();
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.remove(f);
-            f = list.get(0);
-            ft.add(container.getId() , f , Tag);
-            ft.attach(f);
-            ft.commit();
+
+            //如果这个fragment需要更新
+            if (fragmentsUpdateFlag[position]) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.remove(f);//移除旧的fragment
+                f = list.get(position);//换成新的fragment
+                ft.add(container.getId(), f, Tag);//添加新fragment时必须用前面获得的tag，这点很重要
+                ft.attach(f);
+                ft.commit();
+
+                fragmentsUpdateFlag[position] = false;//复位更新标志
+            }
 
             return f;
         }
 
         @Override
         public int getItemPosition(Object object) {
-            return PagerAdapter.POSITION_NONE;
-        }*/
+            return POSITION_NONE;
+        }
 
         @Override
         public int getCount() {
@@ -114,16 +143,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         
         initView();
-        initDatas();
+        initFragments();
         initReceiver();
         initEvent();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mViewPager.setAdapter(adapter);
-        handler.postDelayed(runnable , 1000);
     }
 
     @Override
@@ -152,15 +174,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 初始化Fragment
      */
-    private void initDatas() {
-        FirstFragment t1 = new FirstFragment();
-        list.add(t1);
-        TestFTwo t2 = new TestFTwo();
-        list.add(t2);
-        TestFThree t3 = new TestFThree();
-        list.add(t3);
-        TestFThree t4 = new TestFThree();
-        list.add(t4);
+    private void initFragments() {
+        FirstFragment f1 = new FirstFragment();
+        list.add(f1);
+        TestFTwo f2 = new TestFTwo();
+        list.add(f2);
+        ThirdFragment f3 = new ThirdFragment();
+        list.add(f3);
+        FourthFragment f4 = new FourthFragment();
+        list.add(f4);
+
+        mViewPager.setAdapter(adapter);
     }
 
     /**
@@ -186,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else{
             Log.i(TAG , "底部导航初始化错误");
         }
-
     }
 
     @Override
@@ -274,6 +297,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mBackHandedFragment == null || !mBackHandedFragment.onBackPressed()){
+            if(getSupportFragmentManager().getBackStackEntryCount() == 0){
+                super.onBackPressed();
+            }else{
+                getSupportFragmentManager().popBackStack();
+            }
+        }
+    }
+
+    @Override
+    public void setSelectedFragment(BackHandledFragment selectedFragment) {
+        this.mBackHandedFragment = selectedFragment;
     }
 
 }
