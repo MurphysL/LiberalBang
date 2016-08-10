@@ -24,31 +24,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:src="@drawable/composer_icn_plus"
-                />
+                android:src="@drawable/composer_icn_plus" />
         </RelativeLayout>
 
         <ImageView
             android:src="@drawable/composer_place"
-            android:tag="1"
+            android:tag="当前位置"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:src="@drawable/composer_place"
-            android:tag="2"
+            android:tag="周围的人"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:src="@drawable/composer_place"
-            android:tag="3"
+            android:tag="路线规划"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:src="@drawable/composer_place"
-            android:tag="4"
+            android:tag="地点搜索"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -63,7 +62,6 @@
             android:tag="6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
 
     </com.example.lenovo.murphysl.UI.ArcMenu>
 

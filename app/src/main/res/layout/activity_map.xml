@@ -16,6 +16,6 @@
 
     <include layout="@layout/arc_menu"/>
 
-    <include layout="@layout/activity_radarmap"/>
+    <!--<include layout="@layout/activity_radarmap"/>-->
 
 </RelativeLayout>

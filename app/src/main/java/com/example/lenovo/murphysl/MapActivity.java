@@ -570,7 +570,6 @@ public class MapActivity extends AppCompatActivity{
                             flag = false;
                         }else{
                             stopUploadClick();
-
                             flag = true;
                         }
                         break;
