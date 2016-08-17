@@ -1,27 +1,4 @@
-package com.example.lenovo.murphysl.Map;
-
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.baidu.location.BDLocationListener;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.radar.RadarNearbyInfo;
-import com.baidu.mapapi.radar.RadarNearbyResult;
-import com.baidu.mapapi.radar.RadarNearbySearchOption;
-import com.baidu.mapapi.radar.RadarSearchError;
-import com.baidu.mapapi.radar.RadarSearchListener;
-import com.baidu.mapapi.radar.RadarSearchManager;
-import com.baidu.mapapi.radar.RadarUploadInfo;
-import com.baidu.mapapi.radar.RadarUploadInfoCallback;
-import com.example.lenovo.murphysl.MapActivity;
-import com.example.lenovo.murphysl.R;
-
-import java.util.List;
+package com.example.lenovo.murphysl.map;
 
 /**
  * Radar
@@ -87,7 +64,7 @@ public class Radar {
      * 开始自动上传
      *//*
 
-    public void uploadContinueClick() {
+    public void upload() {
         if (latLng == null) {
             Toast.makeText(radarContext , "未获取到位置", Toast.LENGTH_LONG).show();
             return;
@@ -106,7 +83,7 @@ public class Radar {
      * 停止自动上传
      *//*
 
-    public void stopUploadClick() {
+    public void stopUpload() {
         //uploadAuto = false;
         RadarSearchManager.getInstance().stopUploadAuto();
        */

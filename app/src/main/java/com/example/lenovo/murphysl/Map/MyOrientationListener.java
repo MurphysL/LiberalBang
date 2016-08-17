@@ -1,13 +1,10 @@
-package com.example.lenovo.murphysl.Map;
+package com.example.lenovo.murphysl.map;
 
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
-
-import com.example.lenovo.murphysl.MapActivity;
 
 /**
  * MyOrientationListener

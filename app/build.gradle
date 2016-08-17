@@ -15,17 +15,50 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //自动删除 unaligned .apks
+            applicationVariants.all { variant ->
+                variant.assemble.doLast {
+                    variant.outputs.each { output ->
+                        File unaligned = output.packageApplication.outputFile;
+                        File aligned = output.outputFile
+                        if (!unaligned.getName().equalsIgnoreCase(aligned.getName())) {
+                            println "deleting " + unaligned.getName()
+                            unaligned.delete()
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    sourceSets {
+        main.jniLibs.srcDirs = ['libs']
+    }
+
+    dexOptions{
+        incremental false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+    compile 'cn.bmob.android:bmob-im:2.0.5@aar'
+    compile 'cn.bmob.android:bmob-sdk:3.4.7-aar'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.orhanobut:logger:1.4'
     compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
     compile files('libs/baidumapapi_base_v4_0_0.jar')
     compile files('libs/baidumapapi_map_v4_0_0.jar')
     compile files('libs/baidumapapi_radar_v4_0_0.jar')
     compile files('libs/baidumapapi_search_v4_0_0.jar')
+    compile files('libs/universal-image-loader-1.9.5.jar')
     compile files('libs/locSDK_6.13.jar')
+    compile files('libs/baidumapapi_util_v4_0_0.jar')
 }

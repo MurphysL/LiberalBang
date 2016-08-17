@@ -7,51 +7,57 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="起点：" />
-
-        <EditText
-            android:id="@+id/start"
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:text="中北大学" >
+            android:orientation="horizontal" >
 
-            <requestFocus />
-        </EditText>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="起点：" />
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+            <EditText
+                android:id="@+id/start"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:text="中北大学" >
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="终点：" />
+                <requestFocus />
+            </EditText>
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/end"
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:text="迎泽公园" >
+            android:orientation="horizontal" >
 
-            <requestFocus />
-        </EditText>
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="终点：" />
+
+            <EditText
+                android:id="@+id/end"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:text="迎泽公园" >
+                <requestFocus />
+            </EditText>
+        </LinearLayout>
+
     </LinearLayout>
+
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -124,15 +130,6 @@
                 android:layout_weight="1.0"
                 android:onClick="shareRoute"
                 android:text="分享" />
-
-           <!-- <Button
-                android:id="@+id/customicon"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="10dip"
-                android:layout_weight="1.0"
-                android:onClick="changeRouteIcon"
-                android:text="自定义起终点图标" />-->
         </LinearLayout>
 
         <LinearLayout

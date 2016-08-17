@@ -1,6 +1,5 @@
-package com.example.lenovo.murphysl.UI;
+package com.example.lenovo.murphysl.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;

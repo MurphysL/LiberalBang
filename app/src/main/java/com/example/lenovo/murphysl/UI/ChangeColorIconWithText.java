@@ -1,4 +1,4 @@
-package com.example.lenovo.murphysl.UI;
+package com.example.lenovo.murphysl.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;

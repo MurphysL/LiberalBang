@@ -1,25 +1,10 @@
-package com.example.lenovo.murphysl.Map;
+package com.example.lenovo.murphysl.map;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.location.Poi;
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MyLocationConfiguration;
-import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.model.LatLng;
-import com.example.lenovo.murphysl.MapActivity;
-import com.example.lenovo.murphysl.R;
-
-import java.util.List;
 
 /**
  * Location
@@ -30,7 +15,6 @@ import java.util.List;
  */
 
 public class Location {
-    private static final String TAG = "Location";
 
     private LocationClient mLocationClient = null;
     private LocationClientOption DIYoption , mOption = null;

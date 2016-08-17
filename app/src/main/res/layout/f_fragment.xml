@@ -1,35 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/theme_bg_color"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_location"
-        android:hint="位置信息"
+    <include layout="@layout/include_navi" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/sw_refresh"
+        android:layout_marginTop="@dimen/margin_10"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/bt_loc"
-            android:layout_gravity="center_horizontal"
-            android:text="开启定位"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/tv_location"
+                android:hint="位置信息"
+                android:background="@drawable/input_bg"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="400dp" />
 
-        <Button
-            android:id="@+id/bt_radar"
-            android:layout_gravity="center_horizontal"
-            android:text="开启雷达"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <Button
+                    android:id="@+id/btn_location"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/btn_login_selector"
+                    android:text="@string/location_start"
+                    android:textColor="@color/base_color_text_white"
+                    android:textSize="18sp" />
 
+                <Button
+                    android:id="@+id/btn_radar"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/btn_login_selector"
+                    android:text="@string/radar_start"
+                    android:textColor="@color/base_color_text_white"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

@@ -3,137 +3,107 @@ package com.example.lenovo.murphysl;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
 import android.content.IntentFilter;
-import android.os.Handler;
-import android.os.Message;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.baidu.mapapi.SDKInitializer;
-import com.example.lenovo.murphysl.Fragments.FirstFragment;
-import com.example.lenovo.murphysl.Fragments.FourthFragment;
-import com.example.lenovo.murphysl.Fragments.ThirdFragment;
-import com.example.lenovo.murphysl.Fragments.TestFTwo;
-import com.example.lenovo.murphysl.Map.LocationOption;
-import com.example.lenovo.murphysl.Map.NotifyActivity;
-import com.example.lenovo.murphysl.UI.ChangeColorIconWithText;
+import com.example.lenovo.murphysl.base.BaseActivity;
+import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
+import com.example.lenovo.murphysl.bean.UserBean;
+import com.example.lenovo.murphysl.db.NewFriendManager;
+import com.example.lenovo.murphysl.event.RefreshEvent;
+import com.example.lenovo.murphysl.fragments.FirstFragment;
+import com.example.lenovo.murphysl.fragments.FourthFragment;
+import com.example.lenovo.murphysl.fragments.SecondFragment;
+import com.example.lenovo.murphysl.fragments.ThirdFragment;
+import com.example.lenovo.murphysl.ui.ChangeColorIconWithText;
+import com.example.lenovo.murphysl.util.IMMLeaks;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener , ViewPager.OnPageChangeListener ,BackHandledInterface {
-    private static final String TAG = "MainActivity";
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.newim.event.MessageEvent;
+import cn.bmob.newim.event.OfflineMessageEvent;
+import cn.bmob.newim.listener.ConnectListener;
+import cn.bmob.newim.listener.ConnectStatusChangeListener;
+import cn.bmob.newim.listener.ObseverListener;
+import cn.bmob.newim.notification.BmobNotificationManager;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
 
-    private SDKReceiver mReceiver;
+/**
+ * MainActivity
+ *
+ * @author: lenovo
+ * @time: 2016/8/7 21:24
+ */
 
-    private ViewPager mViewPager;
-    private boolean[] fragmentsUpdateFlag = { false, false, false, false };
-    private List<Fragment> list = new ArrayList<Fragment>();
+public class MainActivity extends BaseActivity implements View.OnClickListener, ViewPager.OnPageChangeListener, BackHandledInterface, ObseverListener {
+
+    @Bind(R.id.id_indicator_one)
+    ChangeColorIconWithText one;
+
+    @Bind(R.id.id_indicator_two)
+    ChangeColorIconWithText two;
+
+    @Bind(R.id.id_indicator_three)
+    ChangeColorIconWithText three;
+
+    @Bind(R.id.id_indicator_four)
+    ChangeColorIconWithText four;
+
+    @Bind(R.id.iv_conversation_tips)
+    ImageView iv_conversation_tips;
+
+    @Bind(R.id.iv_contact_tips)
+    ImageView iv_contact_tips;
+
+    @Bind(R.id.id_viewpager)
+    ViewPager id_viewpager;
+
+    private List<ParentWithNaviFragment> fragments = new ArrayList<ParentWithNaviFragment>();
 
     private List<ChangeColorIconWithText> mTabIndicators = new ArrayList<ChangeColorIconWithText>();
 
     private BackHandledFragment mBackHandedFragment;
 
-   /* private Handler handler = new Handler();
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if(FirstFragment.flag){
-                adapter.notifyDataSetChanged();
-                handler.postDelayed(runnable , 500);
-            }
-        }
-    };*/
-
-    public Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    fragmentsUpdateFlag[0] = true;
-                    adapter.notifyDataSetChanged();
-                    break;
-                case 2:
-                    fragmentsUpdateFlag[0] = true;
-                    adapter.notifyDataSetChanged();
-                    break;
-                case 3:
-                    fragmentsUpdateFlag[2] = true;
-                    adapter.notifyDataSetChanged();
-                    break;
-                case 4:
-                    fragmentsUpdateFlag[2] = true;
-                    adapter.notifyDataSetChanged();
-                    break;
-                default:
-            }
-        }
-    };
-
     /**
      * 监听异常广播
      */
+    private SDKReceiver mReceiver;
     public class SDKReceiver extends BroadcastReceiver {
 
         public void onReceive(Context context, Intent intent) {
             String s = intent.getAction();
-            Log.i(TAG, "action: " + s);
+            log("action: " + s);
             if (s.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
-                Log.i(TAG , "网络异常");
+                log("网络异常");
             }
         }
     }
 
     private FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = list.get(position);
-            Log.i(TAG, "getItem:position=" + position + ",fragment:" + fragment.getClass().getName() + ",fragment.tag=" + fragment.getTag());
-            return fragment;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            //得到缓存的Fragment
-            Fragment f = (Fragment) super.instantiateItem(container , position);
-            String Tag = f.getTag();
-
-            //如果这个fragment需要更新
-            if (fragmentsUpdateFlag[position]) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.remove(f);//移除旧的fragment
-                f = list.get(position);//换成新的fragment
-                ft.add(container.getId(), f, Tag);//添加新fragment时必须用前面获得的tag，这点很重要
-                ft.attach(f);
-                ft.commit();
-
-                fragmentsUpdateFlag[position] = false;//复位更新标志
-            }
-
-            return f;
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return list.size();
+            return fragments.size();
         }
     };
 
@@ -141,17 +111,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+        ButterKnife.bind(this);
+
         initView();
-        initFragments();
+        initTab();
         initReceiver();
-        initEvent();
+        initListener();
+        initIM();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //显示小红点
+        checkRedPoint();
+        //进入应用后，通知栏应取消
+        BmobNotificationManager.getInstance(this).cancelNotification();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
+        BmobIM.getInstance().clear();//清理导致内存泄露的资源
+    }
+
+    /**
+     * 初始化即时通讯
+     */
+    private void initIM() {
+        UserBean user = BmobUser.getCurrentUser(this, UserBean.class);
+        BmobIM.connect(user.getObjectId(), new ConnectListener() {
+            @Override
+            public void done(String uid, BmobException e) {
+                if (e == null) {
+                    log("登录成功");
+                    EventBus.getDefault().post(new RefreshEvent());//发送一个更新事件，同步更新会话及主页的小红点
+                } else {
+                    log(e.getErrorCode() + "/" + e.getMessage());
+                }
+            }
+        });
+        //监听连接状态，也可通过BmobIM.getInstance().getCurrentStatus()来获取当前的长连接状态
+        BmobIM.getInstance().getCurrentStatus();
+        BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
+            @Override
+            public void onChange(ConnectionStatus connectionStatus) {
+                toast("" + connectionStatus.getMsg());
+            }
+        });
+        //解决leancanary提示InputMethodManager内存泄露的问题
+        IMMLeaks.fixFocusedViewLeak(getApplication());
     }
 
     /**
@@ -167,98 +177,114 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 初始化页面滑动监听器
      */
-    private void initEvent() {
-        mViewPager.setOnPageChangeListener(this);
+    private void initListener() {
+        id_viewpager.setOnPageChangeListener(this);
     }
 
     /**
      * 初始化Fragment
      */
-    private void initFragments() {
+    @Override
+    protected void initView() {
+        super.initView();
         FirstFragment f1 = new FirstFragment();
-        list.add(f1);
-        TestFTwo f2 = new TestFTwo();
-        list.add(f2);
+        SecondFragment f2 = new SecondFragment();
         ThirdFragment f3 = new ThirdFragment();
-        list.add(f3);
         FourthFragment f4 = new FourthFragment();
-        list.add(f4);
 
-        mViewPager.setAdapter(adapter);
+        fragments.add(f1);
+        fragments.add(f2);
+        fragments.add(f3);
+        fragments.add(f4);
+
+        id_viewpager.setAdapter(adapter);
     }
 
     /**
      * 初始化控件
      */
-    private void initView() {
-        mViewPager = (ViewPager) findViewById(R.id.id_viewpager);
-        ChangeColorIconWithText one = (ChangeColorIconWithText) findViewById(R.id.id_indicator_one);
+    private void initTab() {
         mTabIndicators.add(one);
-        ChangeColorIconWithText two = (ChangeColorIconWithText) findViewById(R.id.id_indicator_two);
         mTabIndicators.add(two);
-        ChangeColorIconWithText three = (ChangeColorIconWithText) findViewById(R.id.id_indicator_three);
         mTabIndicators.add(three);
-        ChangeColorIconWithText four = (ChangeColorIconWithText) findViewById(R.id.id_indicator_four);
         mTabIndicators.add(four);
 
-        if(one != null && two != null && three != null && four != null){
+        if (one != null && two != null && three != null && four != null) {
             one.setOnClickListener(this);
             two.setOnClickListener(this);
             three.setOnClickListener(this);
             four.setOnClickListener(this);
             one.setIconAlpha(1.0f);
-        }else{
-            Log.i(TAG , "底部导航初始化错误");
+        } else {
+            log("Tab初始化错误");
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    /**
+     * 注册消息接收事件
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(MessageEvent event) {
+        checkRedPoint();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Class<?> TargetClass = null;
-        switch (item.getItemId()){
-            case R.id.action_map:
-                TargetClass = MapActivity.class;
-                break;
-            case R.id.action_map_option:
-                TargetClass = LocationOption.class;
-                break;
-            case R.id.action_map_notify:
-                TargetClass = NotifyActivity.class;
-                break;
-        }
-        if (TargetClass != null) {
-            Intent intent = new Intent(MainActivity.this, TargetClass);
-            intent.putExtra("from", 0);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
+    /**
+     * 注册离线消息接收事件
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(OfflineMessageEvent event) {
+        checkRedPoint();
     }
 
-    @Override
-    public void onClick(View v) {
+    /**
+     * 注册自定义消息接收事件
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(RefreshEvent event) {
+        log("---主页接收到自定义消息---");
+        checkRedPoint();
+    }
+
+    private void checkRedPoint() {
+        int count = (int) BmobIM.getInstance().getAllUnReadCount();
+        if (count > 0) {
+            iv_conversation_tips.setVisibility(View.VISIBLE);
+        } else {
+            iv_conversation_tips.setVisibility(View.GONE);
+        }
+        //是否有好友添加的请求
+        if (NewFriendManager.getInstance(this).hasNewFriendInvitation()) {
+            iv_contact_tips.setVisibility(View.VISIBLE);
+        } else {
+            iv_contact_tips.setVisibility(View.GONE);
+        }
+    }
+
+    @OnClick({R.id.id_indicator_one, R.id.id_indicator_two, R.id.id_indicator_three, R.id.id_indicator_four})
+    public void onClick(View view) {
         resetOtherTabs();
-        switch (v.getId()){
+        switch (view.getId()) {
             case R.id.id_indicator_one:
                 mTabIndicators.get(0).setIconAlpha(1.0f);
-                mViewPager.setCurrentItem(0 , false);
+                id_viewpager.setCurrentItem(0, false);
                 break;
             case R.id.id_indicator_two:
                 mTabIndicators.get(1).setIconAlpha(1.0f);
-                mViewPager.setCurrentItem(1 , false);
+                id_viewpager.setCurrentItem(1, false);
                 break;
             case R.id.id_indicator_three:
                 mTabIndicators.get(2).setIconAlpha(1.0f);
-                mViewPager.setCurrentItem(2 , false);
+                id_viewpager.setCurrentItem(2, false);
                 break;
             case R.id.id_indicator_four:
                 mTabIndicators.get(3).setIconAlpha(1.0f);
-                mViewPager.setCurrentItem(3 , false);
+                id_viewpager.setCurrentItem(3, false);
                 break;
         }
     }
@@ -267,20 +293,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 重置其他TabIndicator颜色
      */
     private void resetOtherTabs() {
-        for(int i = 0 ;i < mTabIndicators.size() ; i ++){
+        for (int i = 0; i < mTabIndicators.size(); i++) {
             mTabIndicators.get(i).setIconAlpha(0);
         }
     }
 
     /**
      * 设置滑动TabIndicator颜色渐变
+     *
      * @param position
      * @param positionOffset
      * @param positionOffsetPixels
      */
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if(positionOffset > 0){
+        if (positionOffset > 0) {
             ChangeColorIconWithText left = mTabIndicators.get(position);
             ChangeColorIconWithText right = mTabIndicators.get(position + 1);
 
@@ -299,12 +326,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     * Fragment后退键支持
+     */
     @Override
     public void onBackPressed() {
-        if(mBackHandedFragment == null || !mBackHandedFragment.onBackPressed()){
-            if(getSupportFragmentManager().getBackStackEntryCount() == 0){
+        if (mBackHandedFragment == null || !mBackHandedFragment.onBackPressed()) {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
                 super.onBackPressed();
-            }else{
+            } else {
                 getSupportFragmentManager().popBackStack();
             }
         }

@@ -1,4 +1,4 @@
-package com.example.lenovo.murphysl.Map;
+package com.example.lenovo.murphysl.map;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,7 +10,8 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.baidu.location.LocationClientOption;
-import com.example.lenovo.murphysl.MapActivity;
+import com.example.lenovo.murphysl.MainActivity;
+import com.example.lenovo.murphysl.MyApplication;
 import com.example.lenovo.murphysl.R;
 
 /**
@@ -34,7 +35,7 @@ public class LocationOption extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_config);
         init();
-        loc =  ((LocationApplication)getApplication()).location;
+        loc =  ((MyApplication)getApplication()).location;
         option = new LocationClientOption();
         loc.stop();
     }
@@ -75,7 +76,6 @@ public class LocationOption extends Activity {
                     int frequence = Integer.parseInt(scanSpan.getText().toString());
                     option.setScanSpan(frequence);
                 } catch (Exception e) {
-
                     option.setScanSpan(3000);
                 }
                 /**
@@ -112,7 +112,7 @@ public class LocationOption extends Activity {
                  */
                 loc.setLocationOption(option);
 
-                Intent locIntent = new Intent(LocationOption.this, MapActivity.class);
+                Intent locIntent = new Intent(LocationOption.this, MainActivity.class);
                 locIntent.putExtra("from", 1);
                 LocationOption.this.startActivity(locIntent);
             }
