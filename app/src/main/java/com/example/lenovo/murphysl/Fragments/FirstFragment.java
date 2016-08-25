@@ -1,30 +1,29 @@
 package com.example.lenovo.murphysl.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.Poi;
+import com.example.lenovo.murphysl.BackHandledInterface;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.MapActivity;
 import com.example.lenovo.murphysl.MyApplication;
 import com.example.lenovo.murphysl.R;
 import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
-import com.example.lenovo.murphysl.map.RadarDemo;
+import com.example.lenovo.murphysl.ui.PopupListView;
+import com.example.lenovo.murphysl.ui.PopupView;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * FirstFragment
@@ -38,59 +37,64 @@ import butterknife.OnClick;
 
 public class FirstFragment extends ParentWithNaviFragment {
 
-    @Bind(R.id.tv_location)
-    TextView tvLocation;
-
-    @Bind(R.id.btn_location)
-    Button btnLocation;
-
-    @Bind(R.id.btn_radar)
-    Button btnRadar;
-
-    @Bind(R.id.sw_refresh)
-    SwipeRefreshLayout sw_refresh;
-
     private Location location;
 
     private String loc;
 
     public static boolean flag = true;
 
-    private Handler handler = new Handler();
+    PopupListView popupListView;
+    ArrayList<PopupView> popupViews;
+    int actionBarHeight;
+    int p = 0;
 
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if(!flag){
-                if(loc != null && tvLocation != null){
-                    if(sw_refresh.isRefreshing()){
-                        sw_refresh.setRefreshing(false);
-                    }
-                    tvLocation.setText(loc);
-                }else{
-                    log("已关闭定位");
-                }
-            }
-            handler.postDelayed(runnable, 1000);
-        }
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.f_fragment, container, false);
         initNaviView();
         ButterKnife.bind(this, rootView);
-        sw_refresh.setEnabled(true);
+
+        popupViews = new ArrayList<>();
+        popupListView = (PopupListView) rootView.findViewById(R.id.popupListView);
+        for (int i = 0; i < 10; i++) {
+            p = i;
+            //修改
+            PopupView popupView = new PopupView(getActivity(), R.layout.popup_view_item) {
+                @Override
+                public void setViewsElements(View view) {
+                    TextView textView = (TextView) view.findViewById(R.id.title);
+                    textView.setText("Popup View " + String.valueOf(p));
+                }
+
+                @Override
+                public View setExtendView(View view) {
+                    View extendView;
+                    if (view == null) {
+                        extendView = LayoutInflater.from(getActivity().getApplicationContext()).inflate(R
+                                .layout.extend_view, null);//修改
+                        TextView innerText = (TextView) extendView.findViewById(R.id.innerText);
+                        innerText.setText("Inner View " + String.valueOf(p));
+                    } else {
+                        extendView = view;
+                    }
+                    return extendView;
+                }
+            };
+            popupViews.add(popupView);
+        }
+        popupListView.init(null);
+        popupListView.setItemViews(popupViews);
+
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        mBackHandledInterface.setSelectedFragment(this); //告诉FragmentActivity，当前Fragment在栈顶
         location = ((MyApplication) getActivity().getApplication()).location;
         location.registerLocListener(mListener);
-
-        handler.postDelayed(runnable, 1000);
     }
 
     @Override
@@ -216,25 +220,15 @@ public class FirstFragment extends ParentWithNaviFragment {
         };
     }
 
-    @OnClick({R.id.btn_location, R.id.btn_radar})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_location:
-                if (flag) {
-                    sw_refresh.setRefreshing(true);
-                    location.start();
-                    btnLocation.setText("关闭定位");
-                    flag = false;
-                } else {
-                    location.stop();
-                    tvLocation.setText("");
-                    btnLocation.setText("开启定位");
-                    flag = true;
-                }
-                break;
-            case R.id.btn_radar:
-                startActivity(new Intent(FirstFragment.this.getContext(), RadarDemo.class));
-                break;
+    @Override
+    public boolean onBackPressed() {
+        if (popupListView.isItemZoomIn()) {
+            log("Test");
+            popupListView.zoomOut();
+            return true;
+        } else {
+            log("TestX");
+            return false;
         }
     }
 }

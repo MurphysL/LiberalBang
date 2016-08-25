@@ -17,7 +17,7 @@ import com.baidu.location.LocationClientOption;
 public class Location {
 
     private LocationClient mLocationClient = null;
-    private LocationClientOption DIYoption , mOption = null;
+    private LocationClientOption mOption = null;
     private Object  objLock = new Object();
 
     public Location(Context locationContext) {
@@ -76,23 +76,6 @@ public class Location {
     }
 
     /**
-     * 设置
-     * @param option
-     * @return
-     */
-    public boolean setLocationOption(LocationClientOption option){
-        boolean isSuccess = false;
-        if(option != null){
-            if(mLocationClient.isStarted())
-                mLocationClient.stop();
-            DIYoption = option;
-            mLocationClient.setLocOption(option);
-            isSuccess = true;
-        }
-        return isSuccess;
-    }
-
-    /**
      * 默认设置
      * @return
      */
@@ -107,16 +90,12 @@ public class Location {
             mOption.setIsNeedLocationDescribe(true);//可选，设置是否需要地址描述
             mOption.setNeedDeviceDirect(true);//可选，设置是否需要设备方向结果
             mOption.setLocationNotify(false);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
-            mOption.setIgnoreKillProcess(true);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+            //mOption.setIgnoreKillProcess(true);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
             mOption.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
             mOption.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
             mOption.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
         }
         return mOption;
-    }
-
-    public LocationClientOption getOption(){
-        return DIYoption;
     }
 
 }

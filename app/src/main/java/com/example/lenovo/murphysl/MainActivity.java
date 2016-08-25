@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -78,22 +80,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private List<ChangeColorIconWithText> mTabIndicators = new ArrayList<ChangeColorIconWithText>();
 
-    private BackHandledFragment mBackHandedFragment;
-
-    /**
-     * 监听异常广播
-     */
-    private SDKReceiver mReceiver;
-    public class SDKReceiver extends BroadcastReceiver {
-
-        public void onReceive(Context context, Intent intent) {
-            String s = intent.getAction();
-            log("action: " + s);
-            if (s.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
-                log("网络异常");
-            }
-        }
-    }
+    private ParentWithNaviFragment mParentWithNaviFragment;
 
     private FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
         @Override
@@ -112,6 +99,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
 
         initView();
         initTab();
@@ -132,7 +127,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mReceiver);
         BmobIM.getInstance().clear();//清理导致内存泄露的资源
     }
 
@@ -170,8 +164,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void initReceiver() {
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
-        mReceiver = new SDKReceiver();
-        registerReceiver(mReceiver, iFilter);
     }
 
     /**
@@ -217,52 +209,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             one.setIconAlpha(1.0f);
         } else {
             log("Tab初始化错误");
-        }
-    }
-
-    /**
-     * 注册消息接收事件
-     *
-     * @param event
-     */
-    @Subscribe
-    public void onEventMainThread(MessageEvent event) {
-        checkRedPoint();
-    }
-
-    /**
-     * 注册离线消息接收事件
-     *
-     * @param event
-     */
-    @Subscribe
-    public void onEventMainThread(OfflineMessageEvent event) {
-        checkRedPoint();
-    }
-
-    /**
-     * 注册自定义消息接收事件
-     *
-     * @param event
-     */
-    @Subscribe
-    public void onEventMainThread(RefreshEvent event) {
-        log("---主页接收到自定义消息---");
-        checkRedPoint();
-    }
-
-    private void checkRedPoint() {
-        int count = (int) BmobIM.getInstance().getAllUnReadCount();
-        if (count > 0) {
-            iv_conversation_tips.setVisibility(View.VISIBLE);
-        } else {
-            iv_conversation_tips.setVisibility(View.GONE);
-        }
-        //是否有好友添加的请求
-        if (NewFriendManager.getInstance(this).hasNewFriendInvitation()) {
-            iv_contact_tips.setVisibility(View.VISIBLE);
-        } else {
-            iv_contact_tips.setVisibility(View.GONE);
         }
     }
 
@@ -331,18 +277,66 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     @Override
     public void onBackPressed() {
-        if (mBackHandedFragment == null || !mBackHandedFragment.onBackPressed()) {
+        if (mParentWithNaviFragment == null || !mParentWithNaviFragment.onBackPressed()) {
             if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                log("Test4");
                 super.onBackPressed();
             } else {
+                log("Test3");
                 getSupportFragmentManager().popBackStack();
             }
         }
     }
 
     @Override
-    public void setSelectedFragment(BackHandledFragment selectedFragment) {
-        this.mBackHandedFragment = selectedFragment;
+    public void setSelectedFragment(ParentWithNaviFragment selectedFragment) {
+        this.mParentWithNaviFragment = selectedFragment;
+    }
+
+    private void checkRedPoint() {
+        int count = (int) BmobIM.getInstance().getAllUnReadCount();
+        if (count > 0) {
+            iv_conversation_tips.setVisibility(View.VISIBLE);
+        } else {
+            iv_conversation_tips.setVisibility(View.GONE);
+        }
+        //是否有好友添加的请求
+        if (NewFriendManager.getInstance(this).hasNewFriendInvitation()) {
+            iv_contact_tips.setVisibility(View.VISIBLE);
+        } else {
+            iv_contact_tips.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 注册消息接收事件
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(MessageEvent event) {
+        checkRedPoint();
+    }
+
+    /**
+     * 注册离线消息接收事件
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(OfflineMessageEvent event) {
+        checkRedPoint();
+    }
+
+    /**
+     * 注册自定义消息接收事件
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(RefreshEvent event) {
+        log("---主页接收到自定义消息---");
+        checkRedPoint();
     }
 
 }

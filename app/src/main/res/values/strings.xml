@@ -84,4 +84,10 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_user_info">UserInfoActivity</string>
+
+    <string name="bmob_im_notification_have">有</string>
+    <string name="bmob_im_notification_send">发来了</string>
+    <string name="bmob_im_notification_msg">条消息</string>
+    <string name="bmob_im_notification_contact">个联系人</string>
+    <string name="bmob_im_notification_ticker">您有一条新消息</string>
 </resources>

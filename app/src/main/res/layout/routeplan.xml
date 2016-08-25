@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/routeplan"
     android:visibility="gone"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -18,7 +18,6 @@
             android:orientation="horizontal" >
 
             <TextView
-                android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="起点：" />
@@ -35,13 +34,10 @@
         </LinearLayout>
 
         <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-
             <TextView
-                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="终点：" />
@@ -52,15 +48,13 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:text="迎泽公园" >
-                <requestFocus />
+
             </EditText>
         </LinearLayout>
 
     </LinearLayout>
 
-
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dip"
@@ -74,7 +68,6 @@
             android:layout_marginLeft="2dip"
             android:layout_marginRight="2dip"
             android:layout_weight="1.0"
-            android:onClick="searchButtonProcess"
             android:text="驾车搜索" />
 
         <Button
@@ -84,7 +77,6 @@
             android:layout_marginLeft="2dip"
             android:layout_marginRight="2dip"
             android:layout_weight="1.0"
-            android:onClick="searchButtonProcess"
             android:text="公交搜索" />
 
         <Button
@@ -94,7 +86,6 @@
             android:layout_marginLeft="2dip"
             android:layout_marginRight="2dip"
             android:layout_weight="1.0"
-            android:onClick="searchButtonProcess"
             android:text="步行搜索" />
         <Button
             android:id="@+id/bike"
@@ -103,37 +94,14 @@
             android:layout_marginLeft="2dip"
             android:layout_marginRight="2dip"
             android:layout_weight="1.0"
-            android:onClick="searchButtonProcess"
             android:text="骑行搜索" />
     </LinearLayout>
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignWithParentIfMissing="false"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dip"
-            android:orientation="vertical" >
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="10dip"
-                android:layout_weight="1.0"
-                android:onClick="shareRoute"
-                android:text="分享" />
-        </LinearLayout>
-
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -149,8 +117,7 @@
                 android:layout_marginLeft="2dip"
                 android:layout_marginRight="2dip"
                 android:layout_weight="1.0"
-                android:background="@drawable/pre_"
-                android:onClick="nodeClick" />
+                android:background="@drawable/pre_" />
 
             <Button
                 android:id="@+id/next"
@@ -159,8 +126,7 @@
                 android:layout_marginLeft="2dip"
                 android:layout_marginRight="2dip"
                 android:layout_weight="1.0"
-                android:background="@drawable/next_"
-                android:onClick="nodeClick" />
+                android:background="@drawable/next_" />
         </LinearLayout>
     </RelativeLayout>
 

@@ -7,20 +7,19 @@
     android:layout_height="match_parent">
     
     <com.example.lenovo.murphysl.ui.ArcMenu
-        android:id="@+id/id_menu"
+        android:id="@+id/id_arc_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         my_tools:position="left_bottom"
         my_tools:radius="200dp"
         >
-        <!--主按钮-->
+
         <RelativeLayout
             android:background="@drawable/composer_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/id_buttom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -53,7 +52,7 @@
 
         <ImageView
             android:src="@drawable/composer_place"
-            android:tag="5"
+            android:tag="链接分享"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

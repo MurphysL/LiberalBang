@@ -75,6 +75,11 @@ public class FourthFragment extends ParentWithNaviFragment {
     }
 
     @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.for_fragment, container, false);
         initNaviView();

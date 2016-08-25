@@ -24,11 +24,6 @@ import cn.bmob.newim.BmobIM;
  */
 
 public class MyApplication extends Application {
-    /**
-     * 以下两个变量需要重构
-     */
-    public Location location;
-    public Vibrator mVibrator;
 
     private static MyApplication INSTANCE;
     public static MyApplication INSTANCE(){
@@ -37,37 +32,37 @@ public class MyApplication extends Application {
     private void setInstance(MyApplication app) {
         setMyApplication(app);
     }
+    public static MyApplication getINSTANCE() {
+        return INSTANCE;
+    }
     private static void setMyApplication(MyApplication a) {
         MyApplication.INSTANCE = a;
     }
+
+    public Location location;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         setInstance(this);
-        Logger.init("MurphySL");
-
         location = new Location(getApplicationContext());
-
-        mVibrator =(Vibrator)getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
 
         /**
          * 初始化定位sdk
          */
         SDKInitializer.initialize(getApplicationContext());
 
-
-        //只有主进程运行的时候才需要初始化
+        /**
+         * 初始化IM（只有主进程运行的时候才需要初始化）
+         */
         if (getApplicationInfo().packageName.equals(getMyProcessName())){
-            //im初始化
-            BmobIM.init(this);
-            //注册消息接收器 this
-            BmobIM.registerDefaultMessageHandler(new MyMessageHandler(this));
+            BmobIM.init(this); //im初始化
+            BmobIM.registerDefaultMessageHandler(new MyMessageHandler(this)); //注册消息接收器 this
         }
+        UniversalImageLoader.initImageLoader(this);//UI初始化
 
-        //UI初始化
-        UniversalImageLoader.initImageLoader(this);
+        Logger.init("MurphySL");
     }
 
     /**

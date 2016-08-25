@@ -30,4 +30,7 @@
     <color name="color_msg_system_time_bg">#20000000</color>
     <color name="color_1e1e1e">#1e1e1e</color>
     <color name="color_b4">#b4b4b4</color>
+
+    <color name="green_theme">#007d65</color>
+    <color name="green_theme2">#cde6c7</color>
 </resources>
