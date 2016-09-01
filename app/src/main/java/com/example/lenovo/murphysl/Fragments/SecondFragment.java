@@ -2,7 +2,6 @@ package com.example.lenovo.murphysl.fragments;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.preference.DialogPreference;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -89,7 +88,7 @@ public class SecondFragment extends ParentWithNaviFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView =inflater.inflate(R.layout.fragment_conversation, container, false);
+        rootView =inflater.inflate(R.layout.fragment_s, container, false);
         initNaviView();
         ButterKnife.bind(this, rootView);
         MyMutlipleItem<Friend> mutlipleItem = new MyMutlipleItem<Friend>() {

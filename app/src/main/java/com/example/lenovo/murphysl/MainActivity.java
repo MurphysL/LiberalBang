@@ -70,9 +70,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Bind(R.id.iv_conversation_tips)
     ImageView iv_conversation_tips;
 
-    @Bind(R.id.iv_contact_tips)
-    ImageView iv_contact_tips;
-
     @Bind(R.id.id_viewpager)
     ViewPager id_viewpager;
 
@@ -279,10 +276,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onBackPressed() {
         if (mParentWithNaviFragment == null || !mParentWithNaviFragment.onBackPressed()) {
             if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-                log("Test4");
                 super.onBackPressed();
             } else {
-                log("Test3");
                 getSupportFragmentManager().popBackStack();
             }
         }
@@ -302,9 +297,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         //是否有好友添加的请求
         if (NewFriendManager.getInstance(this).hasNewFriendInvitation()) {
-            iv_contact_tips.setVisibility(View.VISIBLE);
+            iv_conversation_tips.setVisibility(View.VISIBLE);
         } else {
-            iv_contact_tips.setVisibility(View.GONE);
+            iv_conversation_tips.setVisibility(View.GONE);
         }
     }
 

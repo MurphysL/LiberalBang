@@ -33,7 +33,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/composer_place"
+            android:src="@drawable/composer_with"
             android:tag="周围的人"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

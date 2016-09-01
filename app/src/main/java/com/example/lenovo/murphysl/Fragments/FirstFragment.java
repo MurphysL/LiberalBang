@@ -1,35 +1,52 @@
 package com.example.lenovo.murphysl.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.Poi;
-import com.example.lenovo.murphysl.BackHandledInterface;
-import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
-import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.MapActivity;
-import com.example.lenovo.murphysl.MyApplication;
 import com.example.lenovo.murphysl.R;
+import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
+import com.example.lenovo.murphysl.bean.MyDate;
+import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.ui.PopupListView;
 import com.example.lenovo.murphysl.ui.PopupView;
+import com.example.lenovo.murphysl.util.DepthPageTransformer;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.listener.DownloadFileListener;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.GetListener;
 
 /**
  * FirstFragment
- *
+ * <p/>
  * 问题：
  * 1、环形进度条
+ * 2、UserModel user 线程
  *
  * @author: lenovo
  * @time: 2016/8/4 18:49
@@ -37,55 +54,30 @@ import butterknife.ButterKnife;
 
 public class FirstFragment extends ParentWithNaviFragment {
 
-    private Location location;
-
-    private String loc;
-
-    public static boolean flag = true;
-
+    @Bind(R.id.popupListView)
     PopupListView popupListView;
-    ArrayList<PopupView> popupViews;
-    int actionBarHeight;
-    int p = 0;
+    @Bind(R.id.sw_refresh)
+    SwipeRefreshLayout swRefresh;
 
+    private ViewPager viewPager;
+    private MyPagerAdapter adapter;
+
+    private static final int INIT_POPUPVIEW = 1;
+
+    private ArrayList<PopupView> popupViews;
+
+    private List<String> friendList = new ArrayList<String>();
+    private List<Bitmap> photos;
+    private Map<String , List<Bitmap>> photo = new HashMap<>();
+    private List<ImageView> imageViews = new ArrayList<>();
+
+    private String temp = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.f_fragment, container, false);
+        rootView = inflater.inflate(R.layout.fragment_f, container, false);
         initNaviView();
         ButterKnife.bind(this, rootView);
-
-        popupViews = new ArrayList<>();
-        popupListView = (PopupListView) rootView.findViewById(R.id.popupListView);
-        for (int i = 0; i < 10; i++) {
-            p = i;
-            //修改
-            PopupView popupView = new PopupView(getActivity(), R.layout.popup_view_item) {
-                @Override
-                public void setViewsElements(View view) {
-                    TextView textView = (TextView) view.findViewById(R.id.title);
-                    textView.setText("Popup View " + String.valueOf(p));
-                }
-
-                @Override
-                public View setExtendView(View view) {
-                    View extendView;
-                    if (view == null) {
-                        extendView = LayoutInflater.from(getActivity().getApplicationContext()).inflate(R
-                                .layout.extend_view, null);//修改
-                        TextView innerText = (TextView) extendView.findViewById(R.id.innerText);
-                        innerText.setText("Inner View " + String.valueOf(p));
-                    } else {
-                        extendView = view;
-                    }
-                    return extendView;
-                }
-            };
-            popupViews.add(popupView);
-        }
-        popupListView.init(null);
-        popupListView.setItemViews(popupViews);
-
         return rootView;
     }
 
@@ -93,15 +85,8 @@ public class FirstFragment extends ParentWithNaviFragment {
     public void onStart() {
         super.onStart();
         mBackHandledInterface.setSelectedFragment(this); //告诉FragmentActivity，当前Fragment在栈顶
-        location = ((MyApplication) getActivity().getApplication()).location;
-        location.registerLocListener(mListener);
-    }
-
-    @Override
-    public void onStop() {
-        location.unregisterLocListener(mListener);
-        location.stop();
-        super.onStop();
+        initSwRefresh();
+        updateDate();
     }
 
     @Override
@@ -110,90 +95,234 @@ public class FirstFragment extends ParentWithNaviFragment {
         super.onDestroyView();
     }
 
-    private BDLocationListener mListener = new BDLocationListener() {
-
-        @Override
-        public void onReceiveLocation(BDLocation location) {
-
-            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
-                StringBuffer sb = new StringBuffer(256);
-                sb.append("获取位置时间 : ");
-                /**
-                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间；
-                 * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变
-                 */
-                sb.append(location.getTime());
-                sb.append("\nerror code : ");
-                sb.append(location.getLocType());
-                sb.append("\n纬度 : ");
-                sb.append(location.getLatitude());
-                sb.append("          经度 : ");
-                sb.append(location.getLongitude());
-                sb.append("\nradius : ");
-                sb.append(location.getRadius());
-                sb.append("\n国家代码 : ");
-                sb.append(location.getCountryCode());
-                sb.append("          国家 : ");
-                sb.append(location.getCountry());
-                sb.append("\n城市代码 : ");
-                sb.append(location.getCityCode());
-                sb.append("          城市 : ");
-                sb.append(location.getCity());
-                sb.append("\nDistrict : ");
-                sb.append(location.getDistrict());
-                sb.append("\n街道 : ");
-                sb.append(location.getStreet());
-                sb.append("\naddr : ");
-                sb.append(location.getAddrStr());
-                sb.append("\nDescribe: ");
-                sb.append(location.getLocationDescribe());
-                sb.append("\n方向: ");
-                sb.append(location.getDirection());
-                sb.append("\nPoi: ");
-                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
-                    for (int i = 0; i < location.getPoiList().size(); i++) {
-                        Poi poi = (Poi) location.getPoiList().get(i);
-                        sb.append(poi.getName() + ";");
-                    }
-                }
-                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
-                    sb.append("\nspeed : ");
-                    sb.append(location.getSpeed());// 单位：km/h
-                    sb.append("\nsatellite : ");
-                    sb.append(location.getSatelliteNumber());
-                    sb.append("\nheight : ");
-                    sb.append(location.getAltitude());// 单位：米
-                    sb.append("\ndescribe : ");
-                    sb.append("gps定位成功");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
-                    // 运营商信息
-                    sb.append("\noperationers : ");
-                    sb.append(location.getOperators());
-                    sb.append("\ndescribe : ");
-                    sb.append("网络定位成功");
-                } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
-                    sb.append("\ndescribe : ");
-                    sb.append("离线定位成功，离线定位结果也是有效的");
-                } else if (location.getLocType() == BDLocation.TypeServerError) {
-                    sb.append("\ndescribe : ");
-                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
-                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
-                }
-                log(sb.toString());
-
-                loc = sb.toString();
-
-            } else {
-                log("定位失败");
+    private void initSwRefresh() {
+        swRefresh.setEnabled(true);
+        swRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateDate();
             }
+        });
+    }
+
+    /**
+     * 准备Date历史数据
+     */
+    private void updateDate() {
+        swRefresh.setRefreshing(true);
+
+        if(friendList != null){
+            friendList.clear();
+        }
+        if(popupViews != null){
+            popupViews.clear();
         }
 
+        BmobQuery<MyDate> query = new BmobQuery<MyDate>();
+        query.addWhereEqualTo("user", BmobUser.getCurrentUser(getActivity(), UserBean.class));
+        query.order("-friend");
+        query.include("friend , user");
+        query.findObjects(getActivity(), new FindListener<MyDate>() {
+            @Override
+            public void onSuccess(final List<MyDate> list) {
+                Iterator<MyDate> i = list.iterator();
+                while (i.hasNext()) {
+                    final MyDate date = i.next();
+                    final String url = date.getPhoto().getFileUrl(getActivity());
+                    UserBean friend = date.getFriend();
+                    final String s = friend.getObjectId();
+
+                    BmobQuery<UserBean> q = new BmobQuery<UserBean>();
+                    q.getObject(getActivity(), s, new GetListener<UserBean>() {
+                        @Override
+                        public void onSuccess(UserBean userBean) {
+                            String name = userBean.getUsername();
+                            Message msg = new Message();
+                            Bundle bundle = new Bundle();
+
+                            compareFriendList(name);
+
+                            bundle.putString("url" , url);
+                            bundle.putString("name" , name);
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
+                        }
+
+
+                        @Override
+                        public void onFailure(int i, String s) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                toast("初始化出错");
+            }
+        });
+
+    }
+
+    private synchronized void compareFriendList(String name){
+        boolean flag = false;
+        if(friendList.size() == 0){
+            friendList.add(name);
+            photo.put(name , new ArrayList<Bitmap>());
+            log("name" + name);
+        }else{
+            Iterator<String> it = friendList.iterator();
+            log("friendList" + friendList);
+            while(it.hasNext()){
+                if(name.equals(it.next())){
+                    flag = true;
+                }
+            }
+            if(!flag){
+                log("name" + name);
+                friendList.add(name);
+                photo.put(name , new ArrayList<Bitmap>());
+            }
+        }
+    }
+
+
+    private void downLoadPhotoByUrl(String url , final String name) {
+
+        final String address = Environment.getExternalStorageDirectory().getPath() +
+                "/" + name + "/" + new Date(System.currentTimeMillis()).getTime() + ".png";
+
+        BmobFile bf = new BmobFile(address , "" , url);
+        bf.download(getActivity(), new DownloadFileListener() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                toast("开始下载");
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                log("下载图片成功" + s);
+                swRefresh.setRefreshing(false);
+                log("finl" + name);
+                photo.get(name).add(BitmapFactory.decodeFile(s));
+                Message message = new Message();
+                message.what = INIT_POPUPVIEW;
+                handler.sendMessage(message);
+                if(adapter != null){
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                log("加载失败");
+            }
+        });
+    }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == INIT_POPUPVIEW) {
+                initPopupView();
+            }else{
+                Bundle bundle = msg.getData();
+                String url = bundle.getString("url");
+                String name = bundle.getString("name");
+
+                downLoadPhotoByUrl(url , name);
+            }
+
+        }
     };
+
+    private void initPopupView() {
+        popupListView.removeAllViews();
+        popupViews = new ArrayList<PopupView>();
+        final Iterator<String> i = friendList.iterator();
+        while (i.hasNext()) {
+            final String s = i.next();
+            PopupView popupView = new PopupView(getActivity(), R.layout.popup_view_item) {
+                @Override
+                public void setViewsElements(View view) {
+                    TextView textView = (TextView) view.findViewById(R.id.friend);
+                    textView.setText("朋友：" + s);
+                }
+
+                @Override
+                public View setExtendView(View view) {
+                    View extendView;
+                    //if (view == null) {
+                        log("View");
+                        extendView = LayoutInflater.from(getActivity().getApplicationContext())
+                                .inflate(R.layout.extend_view, null);
+                        viewPager = (ViewPager) extendView.findViewById(R.id.id_viewpager);
+                        viewPager.setPageTransformer(true, new DepthPageTransformer());
+                        log("1" + photo.get("1").size() + "3" + photo.get("3").size());
+                        adapter = new MyPagerAdapter(photo.get(s));
+                        viewPager.setAdapter(adapter);
+                    /*} else {
+                        extendView = view;
+                    }*/
+                    return extendView;
+                }
+            };
+            popupViews.add(popupView);
+        }
+        popupListView.init(null);
+        popupListView.setItemViews(popupViews);
+
+    }
+
+    class MyPagerAdapter extends PagerAdapter{
+
+        List<Bitmap> list;
+
+        public MyPagerAdapter(List<Bitmap> list){
+            this.list = list;
+        }
+
+        @Override
+        public int getCount() {
+            if(list == null){
+                return 0;
+            }
+            return list.size();
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            ImageView imageView = null;
+            log("position" + position);
+            log("imageView"+ imageViews.size());
+            imageView = new ImageView(getActivity());
+            log("list size" + list.size());
+            imageView.setImageBitmap(list.get(position));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageViews.add(imageView);
+            container.addView(imageView);
+            return imageView;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView(imageViews.get(position));
+        }
+    }
+
 
     @Override
     protected String title() {
@@ -215,7 +344,7 @@ public class FirstFragment extends ParentWithNaviFragment {
 
             @Override
             public void clickRight() {
-                startActivity(MapActivity.class,null);
+                startActivity(MapActivity.class, null);
             }
         };
     }
@@ -223,11 +352,9 @@ public class FirstFragment extends ParentWithNaviFragment {
     @Override
     public boolean onBackPressed() {
         if (popupListView.isItemZoomIn()) {
-            log("Test");
             popupListView.zoomOut();
             return true;
         } else {
-            log("TestX");
             return false;
         }
     }

@@ -19,22 +19,23 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal">
+
         <com.example.lenovo.murphysl.ui.ChangeColorIconWithText
             android:id="@+id/id_indicator_one"
             android:layout_width="0dp"
             android:layout_weight="1"
-            my_tools:m_color = "#ff45c01a"
+            my_tools:m_color = "@color/green_theme"
             android:padding="5dp"
             my_tools:m_text_size = "12sp"
             my_tools:m_text = "@string/tab_map"
-            my_tools:m_icon = "@drawable/ic_menu_start_conversation"
+            my_tools:m_icon = "@drawable/ic_menu_allfriends"
             android:layout_height="match_parent" />
 
         <com.example.lenovo.murphysl.ui.ChangeColorIconWithText
             android:id="@+id/id_indicator_two"
             android:layout_width="0dp"
             android:layout_weight="1"
-            my_tools:m_color = "#ff45c01a"
+            my_tools:m_color = "@color/green_theme"
             android:padding="5dp"
             my_tools:m_text_size = "12sp"
             my_tools:m_text = "@string/tab_contact"
@@ -49,11 +50,11 @@
             <com.example.lenovo.murphysl.ui.ChangeColorIconWithText
                 android:id="@+id/id_indicator_three"
                 android:layout_width="match_parent"
-                my_tools:m_color = "#ff45c01a"
+                my_tools:m_color = "@color/green_theme"
                 android:padding="5dp"
                 my_tools:m_text_size = "12sp"
                 my_tools:m_text = "@string/tab_information"
-                my_tools:m_icon = "@drawable/ic_menu_emoticons"
+                my_tools:m_icon = "@drawable/ic_menu_start_conversation"
                 android:layout_height="match_parent" />
 
             <ImageView
@@ -79,27 +80,12 @@
             <com.example.lenovo.murphysl.ui.ChangeColorIconWithText
                 android:id="@+id/id_indicator_four"
                 android:layout_width="match_parent"
-                my_tools:m_color = "#ff45c01a"
+                my_tools:m_color = "@color/green_theme"
                 android:padding="5dp"
                 my_tools:m_text_size = "12sp"
                 my_tools:m_text = "@string/tab_me"
-                my_tools:m_icon = "@drawable/ic_menu_allfriends"
+                my_tools:m_icon = "@drawable/ic_menu_emoticons"
                 android:layout_height="match_parent" />
-
-            <ImageView
-                android:id="@+id/iv_contact_tips"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="7dp"
-                android:background="@mipmap/msg_tips"
-                android:contentDescription="@string/action_settings"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

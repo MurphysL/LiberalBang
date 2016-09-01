@@ -3,6 +3,8 @@ package com.example.lenovo.murphysl;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +37,7 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.radar.RadarNearbyInfo;
 import com.baidu.mapapi.radar.RadarNearbyResult;
 import com.baidu.mapapi.radar.RadarNearbySearchOption;
 import com.baidu.mapapi.radar.RadarSearchError;
@@ -83,6 +86,8 @@ import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
+import com.example.lenovo.murphysl.bean.Friend;
+import com.example.lenovo.murphysl.bean.MyDate;
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.BikingRouteOverlay;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.DrivingRouteOverlay;
@@ -91,6 +96,7 @@ import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.PoiOverlay;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.TransitRouteOverlay;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.WalkingRouteOverlay;
 import com.example.lenovo.murphysl.event.LocationEvent;
+import com.example.lenovo.murphysl.event.UserEvent;
 import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.map.MyOrientationListener;
 import com.example.lenovo.murphysl.map.RouteLineAdapter;
@@ -106,17 +112,22 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * MapActivity
+ *
+ * 问题：MapActivity关闭过快时，location关闭不及时，导致重启MapActivity定位失败
  *
  * @author: lenovo
  * @time: 2016/8/4 18:01
@@ -158,6 +169,7 @@ public class MapActivity extends ParentWithNaviActivity {
     private float orientationX;//旋转方向
     private String mHobby;//用户爱好
     private String mSort;//选择种类
+    private List<Friend> friendList;//用户好友列表
 
     /**
      * 定位
@@ -245,7 +257,7 @@ public class MapActivity extends ParentWithNaviActivity {
         return new ToolBarListener() {
             @Override
             public void clickLeft() {
-
+                finish();
             }
 
             @Override
@@ -260,6 +272,14 @@ public class MapActivity extends ParentWithNaviActivity {
         setContentView(R.layout.activity_map);
         initNaviView();
         ButterKnife.bind(this);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
 
         initLocation();
         initRadar();
@@ -440,6 +460,20 @@ public class MapActivity extends ParentWithNaviActivity {
             }
 
         });
+
+
+        UserModel.getInstance().queryFriends(new FindListener<Friend>() {
+            @Override
+            public void onSuccess(List<Friend> list) {
+                friendList = list;
+            }
+
+            @Override
+            public void onError(int i, String s) {
+               log("获取好友错误："+ s + "(" + i + ")");
+            }
+        });
+
     }
 
     private void initShare() {
@@ -512,7 +546,7 @@ public class MapActivity extends ParentWithNaviActivity {
         //设置初始视距
         MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(15.0f);
         mBaiduMap.setMapStatus(msu);
-        mBaiduMap.setBuildingsEnabled(true);
+        mBaiduMap.setMyLocationEnabled(true);
 
         myOrientationListener = new MyOrientationListener(this);
         myOrientationListener.setOnOrientationListener(new MyOrientationListener.OnOrientationListener() {
@@ -572,6 +606,7 @@ public class MapActivity extends ParentWithNaviActivity {
                 switch (pos) {
                     case 1:
                         myLoction(pt);
+                        toast(view.getTag());
                         break;
                     case 2:
                         if (radar_flag) {
@@ -581,6 +616,7 @@ public class MapActivity extends ParentWithNaviActivity {
                             stopUpload();
                             radar_flag = true;
                         }
+                        toast(view.getTag());
                         break;
                     case 3:
                         mBaiduMap.clear();
@@ -594,6 +630,7 @@ public class MapActivity extends ParentWithNaviActivity {
                             poisearch.setVisibility(View.GONE);
                             search_visible_flag = true;
                         }
+                        toast(view.getTag());
                         break;
                     case 4:
                         mBaiduMap.clear();
@@ -606,15 +643,21 @@ public class MapActivity extends ParentWithNaviActivity {
                             routeplan.setVisibility(View.GONE);
                             routeplan_visible_flag = true;
                         }
+                        toast(view.getTag());
                         break;
                     case 5:
-                        mShareUrlSearch.requestRouteShareUrl(new RouteShareURLOption().from(startNode).to(enPlanNode).routMode(mRouteShareMode));
+                        if(startNode == null || enPlanNode == null){
+                            toast("您还未进行路线规划");
+                        }else{
+                            mShareUrlSearch.requestRouteShareUrl(new RouteShareURLOption().from(startNode).to(enPlanNode).routMode(mRouteShareMode));
+                            toast(view.getTag());
+                        }
                         break;
                     case 6:
+                        toast(view.getTag());
                         break;
 
                 }
-                toast(view.getTag());
             }
         });
     }
@@ -622,7 +665,6 @@ public class MapActivity extends ParentWithNaviActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mBaiduMap.setMyLocationEnabled(true);
         location.start();
         myOrientationListener.start();
         isFirstIn = true;
@@ -643,8 +685,7 @@ public class MapActivity extends ParentWithNaviActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mBaiduMap.setMyLocationEnabled(false);
-        location.unregisterLocListener(mListener);
+        log("onStop");
         manager.removeNearbyInfoListener(myRadarSearchListener);
         myOrientationListener.stop();
         manager.clearUserInfo();
@@ -652,12 +693,15 @@ public class MapActivity extends ParentWithNaviActivity {
 
     @Override
     protected void onDestroy() {
+        log("onDestory");
         mSearch.destroy();
         manager.destroy();
         mPoiSearch.destroy();
         mSuggestionSearch.destroy();
         mShareUrlSearch.destroy();
         mMapView.onDestroy();
+        mBaiduMap.setMyLocationEnabled(false);
+        location.unregisterLocListener(mListener);
         location.stop();
         super.onDestroy();
     }
@@ -764,10 +808,12 @@ public class MapActivity extends ParentWithNaviActivity {
             pt = new LatLng(location.getLatitude(), location.getLongitude());
             city = location.getCity();
             cityCode = Integer.parseInt(String.valueOf(location.getCityCode()));
+
             if (isFirstIn) {
                 myLoction(pt);
                 isFirstIn = false;
             }
+
         }
     }
 
@@ -837,38 +883,62 @@ public class MapActivity extends ParentWithNaviActivity {
      */
     public void parseResult(RadarNearbyResult res) {
         mBaiduMap.clear();
+
         mBaiduMap.setOnMarkerClickListener(new MyRadarMarkerClickListener());
 
         if (res != null && res.infoList != null && res.infoList.size() > 0) {
             for (int i = 0; i < res.infoList.size(); i++) {
-                Long other = res.infoList.get(i).timeStamp.getTime();
+                RadarNearbyInfo nearbyInfo = res.infoList.get(i);
+
+                Long other = nearbyInfo.timeStamp.getTime();
                 Long mine = new Date().getTime();
 
-                if(other > mine - TimeUtil.ONE_MINUTE){
-                BitmapDescriptor ff3 = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
-                MarkerOptions option = new MarkerOptions().icon(ff3).position(res.infoList.get(i).pt);
-                option.animateType(MarkerOptions.MarkerAnimateType.grow);
-                final Bundle des = new Bundle();
-                if (res.infoList.get(i).comments == null || res.infoList.get(i).comments.equals("")) {
+                MarkerOptions option;
+                BitmapDescriptor ff3 = null;
+                Boolean flag = false;
 
-                } else {
-                    UserModel.getInstance().queryUserInfo(res.infoList.get(i).comments, new QueryUserListener() {
-                        @Override
-                        public void done(UserBean s, BmobException e) {
-                            if (e == null) {
-                                des.putString("radar_name" , s.getUsername());
-                                des.putString("radar_hobby" , s.getHobby());
-                                des.putString("radar_sort" , s.getSort());
-                            }
+                if(other > mine - TimeUtil.ONE_WEEK){
+                    Iterator<Friend> iterator = friendList.iterator();
+
+                    while(iterator.hasNext()){
+                        if(iterator.next().getFriendUser().getObjectId().equals(nearbyInfo.comments)){
+                            flag = true;
+                            break;
                         }
+                        flag = false;
+                    }
 
-                    });
+                    if(flag){
+                        ff3 = BitmapDescriptorFactory.fromResource(R.drawable.friend_mark);
+                    }else {
+                        ff3 = BitmapDescriptorFactory.fromResource(R.drawable.stranger_mark);
+                    }
 
-                }
+                    option = new MarkerOptions().icon(ff3).position(res.infoList.get(i).pt);
+                    option.animateType(MarkerOptions.MarkerAnimateType.grow);
 
-                des.putDouble("radar_distance" , DistanceUtil.getDistance(pt, res.infoList.get(i).pt));
-                option.extraInfo(des);
-                mBaiduMap.addOverlay(option);
+                    final Bundle des = new Bundle();
+                    if (nearbyInfo.comments == null || res.infoList.get(i).comments.equals("")) {
+                        log("用户信息不完整");
+                    } else {
+                        UserModel.getInstance().queryUserInfo(res.infoList.get(i).comments, new QueryUserListener() {
+                            @Override
+                            public void done(UserBean s, BmobException e) {
+                                if (e == null) {
+                                    des.putString("radar_id" , s.getObjectId());
+                                    des.putString("radar_name" , s.getUsername());
+                                    des.putString("radar_hobby" , s.getHobby());
+                                    des.putString("radar_sort" , s.getSort());
+                                }
+                            }
+
+                        });
+
+                    }
+
+                    des.putDouble("radar_distance" , DistanceUtil.getDistance(pt, res.infoList.get(i).pt));
+                    option.extraInfo(des);
+                    mBaiduMap.addOverlay(option);
                 }
             }
         }
@@ -919,23 +989,32 @@ public class MapActivity extends ParentWithNaviActivity {
         }
     }
 
+    public String around_name;
+    public String around_id;
+    public String around_hobby;
+    public String around_sort;
+    public Double around_distance;
+
     private class MyRadarMarkerClickListener implements BaiduMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
             mBaiduMap.hideInfoWindow();
 
             if (marker != null) {
-                final String name = marker.getExtraInfo().getString("radar_name");
-                String hobby = marker.getExtraInfo().getString("radar_hobby");
-                String sort = marker.getExtraInfo().getString("radar_sort");
-                Double distance = marker.getExtraInfo().getDouble("radar_distance");
+                around_name = marker.getExtraInfo().getString("radar_name");
+                around_id = marker.getExtraInfo().getString("radar_id");
+                around_hobby = marker.getExtraInfo().getString("radar_hobby");
+                around_sort = marker.getExtraInfo().getString("radar_sort");
+                around_distance = marker.getExtraInfo().getDouble("radar_distance");
+
+                EventBus.getDefault().post(new UserEvent(around_id , around_name , around_hobby , around_sort , around_distance));
 
                 final Bundle bundle = new Bundle();
-                UserModel.getInstance().queryUsers(name, 20, new FindListener<UserBean>() {
+                UserModel.getInstance().queryUsers(around_name, 20, new FindListener<UserBean>() {
                     @Override
                     public void onSuccess(List<UserBean> list) {
                         for (int i = 0; i < list.size(); i++) {
-                            if (list.get(i).getUsername().equals(name)) {
+                            if (list.get(i).getUsername().equals(around_name)) {
                                 bundle.putSerializable("u", list.get(i));
                             }
                         }
@@ -947,10 +1026,27 @@ public class MapActivity extends ParentWithNaviActivity {
                     }
                 });
 
+               /* if(around_distance <= 10.0){
+                    MyDate date = new MyDate();
+                    date.setUser(BmobUser.getCurrentUser(MapActivity.this , UserBean.class));
+                    date.setFriendID(around_name);
+                    date.save(MapActivity.this, new SaveListener() {
+                        @Override
+                        public void onSuccess() {
+                            log("上传成功");
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("上传失败");
+                        }
+                    });
+                }*/
+
                 popupText = new TextView(MapActivity.this);
                 popupText.setBackgroundResource(R.drawable.popup);
                 popupText.setTextColor(0xFF000000);
-                popupText.setText("用户" + name + "\n偏好" + hobby + "\nsort" + sort + "\n距离" + distance);
+                popupText.setText("用户" + around_name + "\n偏好" + around_hobby + "\nsort" + around_sort + "\n距离" + around_distance);
                 popupText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -968,6 +1064,8 @@ public class MapActivity extends ParentWithNaviActivity {
             }
         }
     }
+
+
 
 
     /**
