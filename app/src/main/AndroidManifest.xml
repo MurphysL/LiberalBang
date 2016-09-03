@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:name=".MyApplication"
@@ -76,6 +77,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".PlayerActivity"/>
         <activity android:name=".MainActivity"/>
         <activity android:name=".LoginActivity"/>
         <activity android:name=".RegisterActivity"/>
@@ -83,11 +85,16 @@
         <activity android:name=".UserHobbyActivity"/>
         <activity android:name=".SearchUserActivity" />
         <activity android:name=".NewFriendActivity"/>
-
+        <activity android:name=".PoiDetailActivity"/>
+        <activity android:name=".StarActivity"/>
+        <activity android:name=".VoiceActivity"/>
+        <activity android:name=".face.FaceActivity"/>
+        <activity android:name=".UploadAvatarActivity"/>
 
         <activity android:name=".MapActivity"/>
         <activity android:name=".ImageActivity"/>
         <activity android:name=".DateActivity"/>
+
 
         <activity
             android:name=".ChatActivity"

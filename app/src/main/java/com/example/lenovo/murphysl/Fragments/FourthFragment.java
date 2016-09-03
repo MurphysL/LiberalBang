@@ -5,15 +5,20 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.LoginActivity;
+import com.example.lenovo.murphysl.MapActivity;
 import com.example.lenovo.murphysl.R;
+import com.example.lenovo.murphysl.StarActivity;
 import com.example.lenovo.murphysl.UserHobbyActivity;
 import com.example.lenovo.murphysl.UserInfoActivity;
+import com.example.lenovo.murphysl.VoiceActivity;
+import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
 import com.example.lenovo.murphysl.bean.UserBean;
+import com.example.lenovo.murphysl.face.FaceActivity;
 import com.example.lenovo.murphysl.model.UserModel;
 
 import butterknife.Bind;
@@ -49,15 +54,30 @@ public class FourthFragment extends ParentWithNaviFragment {
 
     @Bind(R.id.tv_set_name)
     TextView tv_set_name;
-
-    @Bind(R.id.layout_info)
-    RelativeLayout layout_info;
-
-    @Bind(R.id.layout_hobby)
-    RelativeLayout layoutHobby;
-
+    @Bind(R.id.btn_logout)
+    Button btnLogout;
 
     public FourthFragment() {
+    }
+
+    @Override
+    public Object right() {
+        return R.drawable.base_action_bar_add_bg_selector;
+    }
+
+    @Override
+    public ParentWithNaviActivity.ToolBarListener setToolBarListener() {
+        return new ParentWithNaviActivity.ToolBarListener() {
+            @Override
+            public void clickLeft() {
+
+            }
+
+            @Override
+            public void clickRight() {
+                startActivity(FaceActivity.class, null);
+            }
+        };
     }
 
     public static FourthFragment newInstance() {
@@ -111,6 +131,16 @@ public class FourthFragment extends ParentWithNaviFragment {
 
     @OnClick(R.id.layout_hobby)
     public void onHobbyClick(View v) {
-        startActivity(UserHobbyActivity.class , null);
+        startActivity(UserHobbyActivity.class, null);
+    }
+
+    @OnClick(R.id.layout_star)
+    public void onClick() {
+        startActivity(StarActivity.class, null);
+    }
+
+    @OnClick(R.id.layout_voice)
+    public void onVoiceClick() {
+        startActivity(VoiceActivity.class , null);
     }
 }

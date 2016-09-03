@@ -25,10 +25,12 @@ import com.example.lenovo.murphysl.ui.PopupListView;
 import com.example.lenovo.murphysl.ui.PopupView;
 import com.example.lenovo.murphysl.util.DepthPageTransformer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,11 +69,8 @@ public class FirstFragment extends ParentWithNaviFragment {
     private ArrayList<PopupView> popupViews;
 
     private List<String> friendList = new ArrayList<String>();
-    private List<Bitmap> photos;
     private Map<String , List<Bitmap>> photo = new HashMap<>();
     private List<ImageView> imageViews = new ArrayList<>();
-
-    private String temp = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -84,6 +83,7 @@ public class FirstFragment extends ParentWithNaviFragment {
     @Override
     public void onStart() {
         super.onStart();
+        log("onStart");
         mBackHandledInterface.setSelectedFragment(this); //告诉FragmentActivity，当前Fragment在栈顶
         initSwRefresh();
         updateDate();
@@ -91,6 +91,7 @@ public class FirstFragment extends ParentWithNaviFragment {
 
     @Override
     public void onDestroyView() {
+        photo.clear();
         ButterKnife.unbind(this);
         super.onDestroyView();
     }
@@ -109,7 +110,7 @@ public class FirstFragment extends ParentWithNaviFragment {
      * 准备Date历史数据
      */
     private void updateDate() {
-        swRefresh.setRefreshing(true);
+        //swRefresh.setRefreshing(true);
 
         if(friendList != null){
             friendList.clear();
@@ -129,6 +130,7 @@ public class FirstFragment extends ParentWithNaviFragment {
                 while (i.hasNext()) {
                     final MyDate date = i.next();
                     final String url = date.getPhoto().getFileUrl(getActivity());
+                    final String objectID = date.getObjectId();
                     UserBean friend = date.getFriend();
                     final String s = friend.getObjectId();
 
@@ -144,8 +146,10 @@ public class FirstFragment extends ParentWithNaviFragment {
 
                             bundle.putString("url" , url);
                             bundle.putString("name" , name);
+                            bundle.putString("objectID" , objectID);
                             msg.setData(bundle);
                             handler.sendMessage(msg);
+                            //swRefresh.setRefreshing(false);
                         }
 
 
@@ -188,25 +192,29 @@ public class FirstFragment extends ParentWithNaviFragment {
     }
 
 
-    private void downLoadPhotoByUrl(String url , final String name) {
+    private void downLoadPhotoByUrl(String url , final String name , String objectID) {
 
         final String address = Environment.getExternalStorageDirectory().getPath() +
-                "/" + name + "/" + new Date(System.currentTimeMillis()).getTime() + ".png";
+                "/" + name + "/" + objectID + ".png";
 
         BmobFile bf = new BmobFile(address , "" , url);
         bf.download(getActivity(), new DownloadFileListener() {
             @Override
             public void onStart() {
                 super.onStart();
-                toast("开始下载");
+                log("开始下载");
             }
 
             @Override
             public void onSuccess(String s) {
                 log("下载图片成功" + s);
-                swRefresh.setRefreshing(false);
                 log("finl" + name);
-                photo.get(name).add(BitmapFactory.decodeFile(s));
+                if(photo.get(name) != null){
+                    photo.get(name).add(BitmapFactory.decodeFile(s));
+                }else{
+                    photo.put(name , new ArrayList<Bitmap>());
+                    photo.get(name).add(BitmapFactory.decodeFile(s));
+                }
                 Message message = new Message();
                 message.what = INIT_POPUPVIEW;
                 handler.sendMessage(message);
@@ -230,17 +238,28 @@ public class FirstFragment extends ParentWithNaviFragment {
                 initPopupView();
             }else{
                 Bundle bundle = msg.getData();
-                String url = bundle.getString("url");
-                String name = bundle.getString("name");
+                if(bundle != null){
+                    String url = bundle.getString("url");
+                    String name = bundle.getString("name");
+                    String objectID = bundle.getString("objectID");
 
-                downLoadPhotoByUrl(url , name);
+                    File file = new File(Environment.getExternalStorageDirectory().getPath() +
+                            "/" + name + "/" + objectID + ".png");
+                    //if(!file.exists()){
+                    downLoadPhotoByUrl(url , name , objectID);
+                    // }
+                }
+
+
             }
 
         }
     };
 
     private void initPopupView() {
-        popupListView.removeAllViews();
+        if(popupListView != null){
+            popupListView.removeAllViews();
+        }
         popupViews = new ArrayList<PopupView>();
         final Iterator<String> i = friendList.iterator();
         while (i.hasNext()) {
@@ -260,8 +279,8 @@ public class FirstFragment extends ParentWithNaviFragment {
                         extendView = LayoutInflater.from(getActivity().getApplicationContext())
                                 .inflate(R.layout.extend_view, null);
                         viewPager = (ViewPager) extendView.findViewById(R.id.id_viewpager);
-                        viewPager.setPageTransformer(true, new DepthPageTransformer());
-                        log("1" + photo.get("1").size() + "3" + photo.get("3").size());
+                        //viewPager.setPageTransformer(true, new DepthPageTransformer());
+                        //log("1" + photo.get("1").size() + "3" + photo.get("3").size());
                         adapter = new MyPagerAdapter(photo.get(s));
                         viewPager.setAdapter(adapter);
                     /*} else {

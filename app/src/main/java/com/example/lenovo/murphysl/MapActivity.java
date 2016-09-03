@@ -4,8 +4,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -36,6 +39,7 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.radar.RadarNearbyInfo;
 import com.baidu.mapapi.radar.RadarNearbyResult;
@@ -89,6 +93,7 @@ import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.Friend;
 import com.example.lenovo.murphysl.bean.MyDate;
 import com.example.lenovo.murphysl.bean.UserBean;
+import com.example.lenovo.murphysl.bean.VoiceBean;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.BikingRouteOverlay;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.DrivingRouteOverlay;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.OverlayManager;
@@ -110,6 +115,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -119,9 +125,14 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.DownloadFileListener;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.GetListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -273,13 +284,13 @@ public class MapActivity extends ParentWithNaviActivity {
         initNaviView();
         ButterKnife.bind(this);
 
-        if (Build.VERSION.SDK_INT >= 21) {
+        /*if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             decorView.setSystemUiVisibility(option);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
+        }*/
 
         initLocation();
         initRadar();
@@ -654,7 +665,8 @@ public class MapActivity extends ParentWithNaviActivity {
                         }
                         break;
                     case 6:
-                        toast(view.getTag());
+                        mBaiduMap.clear();
+                        downloadVoice();
                         break;
 
                 }
@@ -716,6 +728,139 @@ public class MapActivity extends ParentWithNaviActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
+
+    /**
+     * 录音
+     */
+    private List<BmobFile> voiceList = new ArrayList<>();
+    private List<LatLng> geoList = new ArrayList<>();
+    private List<UserBean> userList = new ArrayList<>();
+    private void downloadVoice(){
+        BmobQuery<VoiceBean> q = new BmobQuery<>();
+        q.findObjects(MapActivity.this, new FindListener<VoiceBean>() {
+            @Override
+            public void onSuccess(List<VoiceBean> list) {
+                Iterator<VoiceBean> i = list.iterator();
+                log("size" + list.size());
+                while(i.hasNext()){
+                    VoiceBean voiceBean = i.next();
+                    BmobFile voice = voiceBean.getFile();
+                    UserBean user = voiceBean.getUser();
+                    Double latitude = voiceBean.getGeo().getLatitude();
+                    Double longitude= voiceBean.getGeo().getLongitude();
+                    LatLng latLng = new LatLng(latitude , longitude);
+
+                    voiceList.add(voice);
+                    geoList.add(latLng);
+                    userList.add(user);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("geo" , latLng);
+                    bundle.putSerializable("voice" , voice);
+                    bundle.putSerializable("user" , user);
+
+                    //构建Marker图标
+                    BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+                    //构建MarkerOption，用于在地图上添加Marker
+                    OverlayOptions option = new MarkerOptions()
+                            .animateType(MarkerOptions.MarkerAnimateType.grow)
+                            .position(latLng)
+                            .extraInfo(bundle)
+                            .icon(bitmap);
+                    //在地图上添加Marker，并显示
+                    mBaiduMap.addOverlay(option);
+                    mBaiduMap.setOnMarkerClickListener(new MyVoiceMarkerClickListener());
+                    toast("下载完成");
+                    log("下载完成");
+                }
+
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+        });
+    }
+
+    private class MyVoiceMarkerClickListener implements BaiduMap.OnMarkerClickListener {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            mBaiduMap.hideInfoWindow();
+
+            if (marker != null) {
+                LatLng geo = marker.getExtraInfo().getParcelable("geo");
+                BmobFile voice  = (BmobFile) marker.getExtraInfo().getSerializable("voice");
+
+                final Bundle bundle = new Bundle();
+                bundle.putString("voice" , voice.getFileUrl(MapActivity.this));
+                //MediaPlayer mp = new MediaPlayer();
+                //try {
+                    log("url" + Uri.parse(voice.getFileUrl(MapActivity.this)));
+                    //mp.setDataSource(MapActivity.this , Uri.parse(voice.getFileUrl(MapActivity.this)));
+                //} catch (IOException e) {
+                    //e.printStackTrace();
+                //}
+                //mp.start();
+               /* voice.download(MapActivity.this, new DownloadFileListener() {
+                    @Override
+                    public void onSuccess(String s) {
+                        toast("下载完成");
+                        MediaPlayer mp = new MediaPlayer();
+                        try {
+                            mp.setDataSource(s);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        mp.start();
+                    }
+
+                    @Override
+                    public void onFailure(int i, String s) {
+
+                    }
+                });*/
+                //UserBean user = (UserBean) marker.getExtraInfo().getSerializable("user");
+
+               /* final Bundle bundle = new Bundle();
+                UserModel.getInstance().queryUsers(around_name, 20, new FindListener<UserBean>() {
+                    @Override
+                    public void onSuccess(List<UserBean> list) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getUsername().equals(around_name)) {
+                                bundle.putSerializable("u", list.get(i));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(int i, String s) {
+
+                    }
+                });*/
+
+                popupText = new TextView(MapActivity.this);
+                popupText.setBackgroundResource(R.drawable.popup);
+                popupText.setTextColor(0xFF000000);
+                popupText.setText("地理" + geo.toString());
+                popupText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        log("点击");
+                        startActivity(PlayerActivity.class , bundle);
+                    }
+                });
+
+                mBaiduMap.showInfoWindow(new InfoWindow(popupText, marker.getPosition(), -47));
+                MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(marker.getPosition());
+                mBaiduMap.setMapStatus(update);
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 
 
 
@@ -894,7 +1039,7 @@ public class MapActivity extends ParentWithNaviActivity {
                 Long mine = new Date().getTime();
 
                 MarkerOptions option;
-                BitmapDescriptor ff3 = null;
+                BitmapDescriptor ff3;
                 Boolean flag = false;
 
                 if(other > mine - TimeUtil.ONE_WEEK){
@@ -1125,15 +1270,15 @@ public class MapActivity extends ParentWithNaviActivity {
     public void onClickPoi(View view) {
         switch (view.getId()) {
             case R.id.search:
-                searchPoi(null);
+                searchPoi();
                 break;
             case R.id.map_next_data:
                 loadIndex++;
-                searchPoi(null);
+                searchPoi();
                 break;
         }
     }
-    public void searchPoi(View v) {
+    public void searchPoi() {
         String cityTemp = etCity.getText().toString();
         searchKey = searchkey.getText().toString();
         mPoiSearch.searchInCity((new PoiCitySearchOption())
@@ -1188,10 +1333,34 @@ public class MapActivity extends ParentWithNaviActivity {
          * @param result
          */
         public void onGetPoiDetailResult(PoiDetailResult result) {
+            log("onGetPoiDetailResult");
             if (result.error != SearchResult.ERRORNO.NO_ERROR) {
                 toast("抱歉，未找到结果");
             } else {
-                toast(result.getName() + ": " + result.getAddress());
+                log("已查询到结果");
+                String poiUrl = result.getDetailUrl();
+                String poiname = result.getName();
+                String poiAddress = result.getAddress();
+                String poiTele = result.getTelephone();
+                String poiTag = result.getTag();
+                String poiTime = result.getShopHours();
+                Double poiHRating = result.getHygieneRating();//卫生
+                Double poiTRating= result.getTasteRating();//味道
+                Double poiORating= result.getOverallRating();//综合
+                Double poiSRating = result.getServiceRating();//服务
+
+                Bundle bundle =  new Bundle();
+                bundle.putString("poiname" , poiname);
+                bundle.putString("poiAddress" , poiAddress);
+                bundle.putString("poiTele" , poiTele);
+                bundle.putString("poiTag" , poiTag);
+                bundle.putDouble("poiHRating" , poiHRating);
+                bundle.putDouble("poiTRating" , poiTRating);
+                bundle.putDouble("poiORating" , poiORating);
+                bundle.putDouble("poiSRating" , poiSRating);
+                bundle.putString("poiTime" , poiTime);
+                bundle.putString("url" , poiUrl);
+                startActivity(PoiDetailActivity.class , bundle);
             }
         }
 
@@ -1200,6 +1369,49 @@ public class MapActivity extends ParentWithNaviActivity {
 
         }
     }
+
+    /**
+     * 使用PoiOverlay 展示poi点，在poi被点击时显示poi详情.
+     */
+    private class MyPoiOverlay extends PoiOverlay {
+
+        public MyPoiOverlay(BaiduMap baiduMap) {
+            super(baiduMap);
+        }
+
+        @Override
+        public boolean onPoiClick(int index) {
+            super.onPoiClick(index);
+            PoiInfo poi = getPoiResult().getAllPoi().get(index);
+            if (poi.hasCaterDetails) {
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption()).poiUid(poi.uid));
+            }
+            return true;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private class MySuggestionResultListener implements OnGetSuggestionResultListener {
 
@@ -1533,25 +1745,7 @@ public class MapActivity extends ParentWithNaviActivity {
         }
     }
 
-    /**
-     * 使用PoiOverlay 展示poi点，在poi被点击时显示poi详情.
-     */
-    private class MyPoiOverlay extends PoiOverlay {
 
-        public MyPoiOverlay(BaiduMap baiduMap) {
-            super(baiduMap);
-        }
-
-        @Override
-        public boolean onPoiClick(int index) {
-            super.onPoiClick(index);
-            PoiInfo poi = getPoiResult().getAllPoi().get(index);
-            if (poi.hasCaterDetails) {
-                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption()).poiUid(poi.uid));
-            }
-            return true;
-        }
-    }
 
 
     private class MyGetGeoCoderResultListener implements OnGetGeoCoderResultListener {
