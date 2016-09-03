@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/theme_bg_color"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/include_navi"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_activtiy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/about_top_bg"
+        android:minHeight="@dimen/height_40"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <TextView
+            style="@style/style_text_black"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/add_activity" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/iv_activity"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_20"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/margin_16"
+                android:src="@mipmap/ic_launcher" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_height="45dp">
+
+        <Button
+            android:id="@+id/btn_eat_chinese"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_eat_chinese"
+            />
+
+        <Button
+            android:id="@+id/btn_eat_west"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_eat_west"
+            />
+
+        <Button
+            android:id="@+id/btn_eat_fast"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_eat_fast"
+            />
+
+        <Button
+            android:id="@+id/btn_eat_coffee"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_eat_coffee"
+            />
+
+        <Button
+            android:id="@+id/btn_snack"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_eat_snack" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_height="45dp">
+
+        <Button
+            android:id="@+id/btn_KTV"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_KTV"
+            />
+
+        <Button
+            android:id="@+id/btn_movie"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_movie" />
+
+        <Button
+            android:id="@+id/btn_bar"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_bar"
+            />
+
+        <Button
+            android:id="@+id/btn_gym"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_gym"
+            />
+
+        <Button
+            android:id="@+id/btn_internet"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_internet" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_height="45dp">
+
+        <Button
+            android:id="@+id/btn_zoo"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_tour_zoo"
+            />
+
+        <Button
+            android:id="@+id/btn_amusement"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_tour_amusement" />
+
+        <Button
+            android:id="@+id/btn_park"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_tour_park"
+            />
+
+        <Button
+            android:id="@+id/btn_museum"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_tour_museum"
+            />
+
+        <Button
+            android:id="@+id/btn_sight"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_tour_sight" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_sort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/about_top_bg"
+        android:minHeight="@dimen/height_40"
+        android:layout_marginTop="@dimen/margin_16"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <TextView
+            style="@style/style_text_black"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/add_sort" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/iv_sort"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_20"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/margin_16"
+                android:src="@mipmap/ic_launcher" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_sort_heat"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+
+            android:text="@string/sort_heat"
+            />
+
+        <Button
+            android:id="@+id/btn_sort_distance"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+
+            android:text="@string/sort_distance" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:layout_gravity="bottom"
+        android:id="@+id/btn_comfirm"
+        style="@style/style_text_white"
+        android:background="@drawable/btn_login_selector"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:text="确认" />
+
+</LinearLayout>

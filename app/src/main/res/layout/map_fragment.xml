@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/theme_bg_color"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/include_navi" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/sw_refresh"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.baidu.mapapi.map.MapView
+                    android:id="@+id/bmapView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:clickable="true" />
+
+                <include layout="@layout/activity_poi"/>
+
+                <include layout="@layout/routeplan"/>
+
+                <include layout="@layout/arc_menu"/>
+
+            </RelativeLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>
