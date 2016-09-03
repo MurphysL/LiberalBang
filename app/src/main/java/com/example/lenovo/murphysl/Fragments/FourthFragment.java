@@ -1,6 +1,7 @@
 package com.example.lenovo.murphysl.fragments;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.LoginActivity;
-import com.example.lenovo.murphysl.MapActivity;
+import com.example.lenovo.murphysl.PhotoActivity;
 import com.example.lenovo.murphysl.R;
 import com.example.lenovo.murphysl.StarActivity;
 import com.example.lenovo.murphysl.UserHobbyActivity;
@@ -141,6 +142,11 @@ public class FourthFragment extends ParentWithNaviFragment {
 
     @OnClick(R.id.layout_voice)
     public void onVoiceClick() {
-        startActivity(VoiceActivity.class , null);
+        startActivity(VoiceActivity.class, null);
+    }
+
+    @OnClick(R.id.layout_photo)
+    public void onPhotoClick() {
+        startActivity(PhotoActivity.class, null);
     }
 }

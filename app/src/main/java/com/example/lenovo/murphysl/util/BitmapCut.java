@@ -100,14 +100,14 @@ public class BitmapCut
 
         int cX = (int) (w * centerX / 100);
         int cY = (int) (h * centerY / 100);
-        Log.i("size" , "cx" + cX + "cY" +cY);
+        //Log.i("size" , "cx" + cX + "cY" +cY);
 
         int wh = (int) ((width * w > height * h ? width * w : height * h) / 100);// 裁切后所取的正方形区域边长
 
         int retX = cX - wh / 2 - 70;
         int retY = cY - wh / 2 - 70;
 
-        Log.i("size","w" + w + "h" + h + "wh" + wh + "retX" + retX + "retY" + retY +"cX" +centerX + "cy" + centerY);
+        //Log.i("size","w" + w + "h" + h + "wh" + wh + "retX" + retX + "retY" + retY +"cX" +centerX + "cy" + centerY);
 
         Bitmap bmp = Bitmap.createBitmap(bitmap, retX, retY, wh + 140, wh + 140, null, false);
 

@@ -21,7 +21,6 @@ import com.example.lenovo.murphysl.face.FacePPDecet;
 import com.example.lenovo.murphysl.model.UserModel;
 import com.example.lenovo.murphysl.util.BitmapCut;
 import com.facepp.error.FaceppParseException;
-import com.facepp.http.PostParameters;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +37,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
@@ -61,16 +61,21 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
     private Button decet;
     private ImageView imageView;
     private View waitting;
-    private String address;
+
     private Bitmap mPhotoImage;
     private Paint mPaint;
 
     private UserBean user = UserModel.getInstance().getUser();
 
-    final String s = Environment.getExternalStorageDirectory().getPath() + "/pic.png";
+    private final String avatar = Environment.getExternalStorageDirectory().getPath() + "/" + user + ".png";//修改图片地址
+
+    private String url;//原始图片URL
 
     private static final int MSG_SUCCESS = 0X111;
     private static final int MSG_ERROR = 0X112;
+    private static final int MSG_TARIN = 0X113;
+    private static final int MSG_UPLOAD_PHOTO = 0X114;
+    private static final int MSG_DECET = 0X115;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +105,7 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
                 case MSG_SUCCESS:
                     waitting.setVisibility(View.GONE);
                     JSONObject rs = (JSONObject) msg.obj;
-                    prepareRsBitmap(rs);
+                    recognitionFaceNum(rs);
                     break;
                 case MSG_ERROR:
                     waitting.setVisibility(View.GONE);
@@ -112,30 +117,66 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
                         toast(errorMsg);
                     }
                     break;
-                case 6:
-                    Bundle b = msg.getData();
+                case MSG_TARIN:
+                    FacePPDecet.train(UserModel.getInstance().getUser().getUsername(), new FacePPDecet.CallBack() {
+                        @Override
+                        public void success(JSONObject result) {
+                            log("训练完成");
+                        }
 
-                    if (b != null) {
-                        log("已获取文件");
-                        BmobFile file = (BmobFile) b.getSerializable("Picfile");
-                        user.setPic(file);
-                        user.update(UploadAvatarActivity.this, new UpdateListener() {
-                            @Override
-                            public void onSuccess() {
-                                toast("上传成功");
-                                startActivity(MainActivity.class, null, true);
-                                finish();
-                            }
+                        @Override
+                        public void error(FaceppParseException e) {
+                            log("训练失败");
+                        }
+                    });
+                    break;
+                case MSG_UPLOAD_PHOTO:
+                    final BmobFile file = new BmobFile(new File(avatar));
+                    file.upload(UploadAvatarActivity.this, new UploadFileListener() {
+                        @Override
+                        public void onSuccess() {
+                            user.setPic(file);
+                            user.update(UploadAvatarActivity.this, new UpdateListener() {
+                                @Override
+                                public void onSuccess() {
+                                    toast("头像上传成功");
+                                    startActivity(MainActivity.class, null, true);
+                                    finish();
+                                }
 
-                            @Override
-                            public void onFailure(int i, String s) {
-                                log("上传失败" + s);
-                            }
-                        });
-                    }
+                                @Override
+                                public void onFailure(int i, String s) {
+                                    log("头像上传失败" + s);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("头像上传错误" + s);
+                        }
+                    });
 
                     break;
+                case MSG_DECET:
+                    FacePPDecet.decet(url , new FacePPDecet.CallBack() {
+                        @Override
+                        public void success(JSONObject result) {
+                            Message message = Message.obtain();
+                            message.what = MSG_SUCCESS;
+                            message.obj = result;
+                            handler.sendMessage(message);
+                        }
 
+                        @Override
+                        public void error(FaceppParseException e) {
+                            Message message = Message.obtain();
+                            message.what = MSG_ERROR;
+                            message.obj = e.getErrorMessage();
+                            handler.sendMessage(message);
+                        }
+                    });
+                    break;
             }
             super.handleMessage(msg);
         }
@@ -159,28 +200,27 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
     }
 
     /**
-     * 解析数据
-     *
+     * 识别人脸数
      * @param rs
      */
-    private void prepareRsBitmap(JSONObject rs) {
-
+    private void recognitionFaceNum(JSONObject rs) {
         Bitmap bitmap = Bitmap.createBitmap(mPhotoImage.getWidth(), mPhotoImage.getHeight(), mPhotoImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(mPhotoImage, 0, 0, null);
         try {
             JSONArray faces = rs.getJSONArray("face");
             int faceCount = faces.length();
+            log("faceCount：" + faceCount);
 
             if (faceCount == 1) {
                 String name = UserModel.getInstance().getUser().getUsername();
-                log(name);
+                log("User name：" +  name);
 
-                FacePPDecet.createPerson(name , new FacePPDecet.CallBack() {
+                FacePPDecet.createPerson(rs , name , new FacePPDecet.CallBack() {
                     @Override
                     public void success(JSONObject result) {
                         try {
-                            log("personname : " + result.getString("person_name"));
+                            log("person name : " + result.getString("person_name"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -193,14 +233,19 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
                 });
 
                 Bitmap bm = cutRsBitmap(bitmap, rs);
-                mPhotoImage = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight());//?
 
-                File f = new File(s);
+                mPhotoImage = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight());
+
+                File f = new File(avatar);
                 try {
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
-                    mPhotoImage.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                    bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
                     bos.flush();
                     bos.close();
+
+                    Message msg = new Message();
+                    msg.what = MSG_UPLOAD_PHOTO;
+                    handler.sendMessage(msg);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -214,13 +259,21 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
 
             } else {
                 mPhotoImage = null;
-                toast("无法识别");
-                log("无法识别");
+                toast("人数错误");
+                log("人数错误");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        prepareRsBitmap(rs , bitmap , canvas);
+    }
 
+    /**
+     * 解析数据
+     *
+     * @param rs
+     */
+    private void prepareRsBitmap(JSONObject rs , Bitmap bitmap , Canvas canvas) {
         try {
             JSONArray faces = rs.getJSONArray("face");
 
@@ -296,23 +349,10 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
         switch (v.getId()) {
             case R.id.decet:
                 waitting.setVisibility(View.VISIBLE);
-                FacePPDecet.decet(mPhotoImage, new FacePPDecet.CallBack() {
-                    @Override
-                    public void success(JSONObject result) {
-                        Message message = Message.obtain();
-                        message.what = MSG_SUCCESS;
-                        message.obj = result;
-                        handler.sendMessage(message);
-                    }
+                Message msg = new Message();
+                msg.what = MSG_DECET;
+                handler.sendMessage(msg);
 
-                    @Override
-                    public void error(FaceppParseException e) {
-                        Message message = Message.obtain();
-                        message.what = MSG_ERROR;
-                        message.obj = e.getErrorMessage();
-                        handler.sendMessage(message);
-                    }
-                });
                 break;
             case R.id.get_image:
                 startActivityForResult(new Intent(this, ImageActivity.class), CODE_IMAGE);
@@ -324,53 +364,49 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CODE_IMAGE) {
             if (data != null) {
+                waitting.setVisibility(View.VISIBLE);
+
                 List<String> list = data.getStringArrayListExtra("imgs");
-                Iterator<String> iterator = list.iterator();
-                if (iterator.hasNext()) {
-                    address = iterator.next();
-                    mPhotoImage = BitmapFactory.decodeFile(address);
-                    imageView.setImageBitmap(mPhotoImage);
-                }
+                String address = list.get(list.size() - 1);
+                mPhotoImage = BitmapFactory.decodeFile(address);
+                imageView.setImageBitmap(mPhotoImage);
+
+                upLoadPhoto(address);
+
+                waitting.setVisibility(View.GONE);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * 上传原图片至Bmob
+     * @param s
+     */
+    private BmobFile upLoadPhoto(final String s){
+        log("原始图片地址:" + s);
+        final BmobFile file = new BmobFile(new File(s));
 
-    @OnClick(R.id.get_upload)
-    public void onClick() {
-        log("神tm");
-        BmobFile file = new BmobFile(new File(s));
         file.upload(UploadAvatarActivity.this, new UploadFileListener() {
             @Override
             public void onSuccess() {
-                log("头像上传成功");
-                user = UserModel.getInstance().getUser();
-                log("file" + s);
-                final BmobFile file = new BmobFile(new File(s));
-                file.upload(UploadAvatarActivity.this, new UploadFileListener() {
-                    @Override
-                    public void onSuccess() {
-                        Message msg = new Message();
-                        Bundle b = new Bundle();
-                        b.putSerializable("Picfile", file);
-                        msg.setData(b);
-                        msg.what = 6;
-                        handler.sendMessage(msg);
-                    }
-
-                    @Override
-                    public void onFailure(int i, String s) {
-                        log("文件上传错误" + s);
-                    }
-                });
+                url = file.getFileUrl(UploadAvatarActivity.this);
+                log("头像原图上传成功 URL" + url);
             }
 
             @Override
             public void onFailure(int i, String s) {
-
+                log("头像原图上传错误" + s);
             }
         });
+        return file;
+    }
+
+    @OnClick(R.id.get_upload)
+    public void onClick() {
+        Message msg = new Message();
+        msg.what = MSG_TARIN;
+        handler.sendMessage(msg);
     }
 }
 

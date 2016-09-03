@@ -15,15 +15,9 @@
         >
 
         <RelativeLayout
-            android:background="@drawable/composer_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/composer_icn_plus" />
+            android:background="@drawable/main_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp">
         </RelativeLayout>
 
         <ImageView

@@ -196,7 +196,7 @@ public class ArcMenu extends ViewGroup implements View.OnClickListener{
         // mCButton = getChildAt(0);
         // }
 
-        rotateCButton(v, 0f, 360f, 300);
+        //rotateCButton(v, 0f, 360f, 300);
 
         toggleMenu(300);
 
@@ -374,7 +374,7 @@ public class ArcMenu extends ViewGroup implements View.OnClickListener{
     }
 
 
-    private void rotateCButton(View v, float start, float end, int duration) {
+    /*private void rotateCButton(View v, float start, float end, int duration) {
 
         RotateAnimation anim = new RotateAnimation(start, end,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
@@ -382,5 +382,5 @@ public class ArcMenu extends ViewGroup implements View.OnClickListener{
         anim.setDuration(duration);
         anim.setFillAfter(true);
         v.startAnimation(anim);
-    }
+    }*/
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MurphySL</string>
+    <string name="app_name">觅友</string>
 
     <string name="action_search">查找</string>
     <string name="action_add">添加</string>
@@ -70,6 +70,7 @@
     <string name="set_hobby">个人偏好</string>
     <string name="set_star">个人排名</string>
     <string name="set_voice">留声机</string>
+    <string name="set_photo">云相册</string>
     <string name="set_blacklist">黑名单</string>
     <!--<string name="set_voice">声音</string>-->
     <string name="set_vibrate">震动</string>

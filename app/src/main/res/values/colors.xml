@@ -33,4 +33,9 @@
 
     <color name="green_theme">#007d65</color>
     <color name="green_theme2">#cde6c7</color>
+
+    <color name="color_1">#A4E3BD</color>
+    <color name="color_2">#FDF5E6</color>
+    <color name="color_3">#FAEBD7</color>
+
 </resources>

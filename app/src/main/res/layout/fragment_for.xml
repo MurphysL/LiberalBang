@@ -124,6 +124,35 @@
         android:background="@drawable/base_horizontal_line" >
     </View>
 
+    <RelativeLayout
+        android:id="@+id/layout_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_selector"
+        android:minHeight="50dp"
+        android:padding="10dp" >
+
+        <TextView
+            style="@style/style_text_black"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/set_photo" />
+
+        <TextView
+            style="@style/style_text_black"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:drawablePadding="10dp"
+            android:drawableRight="@mipmap/register_bottom_arrow" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_2"
+        android:background="@drawable/base_horizontal_line" >
+    </View>
+
 
     
     <!--<RelativeLayout
