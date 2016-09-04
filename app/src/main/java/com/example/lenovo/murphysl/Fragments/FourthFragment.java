@@ -1,7 +1,6 @@
 package com.example.lenovo.murphysl.fragments;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;

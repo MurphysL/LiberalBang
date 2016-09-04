@@ -53,7 +53,6 @@ public class FacePPDecet {
                     parameters.setImg(arrays);
                     JSONObject jsonObject = requests.detectionDetect(parameters);
 
-
                     if (callBack != null) {
                         callBack.success(jsonObject);
                     }
@@ -189,7 +188,7 @@ public class FacePPDecet {
         }).start();
     }
 
-    public static void identify(final String face, final CallBack callBack){
+    public static void identify(final String url , final String face, final CallBack callBack){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -197,11 +196,11 @@ public class FacePPDecet {
                     HttpRequests requests = new HttpRequests(Constant.KEY, Constant.SECRET, true, true);
                     JSONObject jsonObject = requests.recognitionIdentify(new PostParameters()
                             .setGroupName("user")
+                            .setUrl(url)
                             .setFaceId(face));
                     if (callBack != null) {
                         callBack.success(jsonObject);
                     }
-
                 } catch (FaceppParseException e) {
                     e.printStackTrace();
 

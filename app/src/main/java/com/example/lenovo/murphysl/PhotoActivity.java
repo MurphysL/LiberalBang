@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
+import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.face.FacePPDecet;
+import com.example.lenovo.murphysl.model.UserModel;
 import com.facepp.error.FaceppParseException;
 
 import org.json.JSONArray;
@@ -31,6 +34,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 /**
  * PhotoActivity
@@ -44,63 +50,58 @@ public class PhotoActivity extends ParentWithNaviActivity {
 
     @Bind(R.id.image)
     ImageView image;
-    @Bind(R.id.age_gender)
-    TextView ageGender;
     @Bind(R.id.framelayout)
     FrameLayout framelayout;
 
     private static final int CODE_CAMERA = 1;
-    private static final int CODE_QUERY = 0;
-    private static final int CODE_IDENTIFY = 2;
+    private static final int MSG_IDENTIFY = 2;
     private static final int CODE_PHOTO = 3;
+    private static final int MSG_UPLOAD_PHOTO = 4;
 
-    Bitmap mPhotoImage;
-    String address = Environment.getExternalStorageDirectory().getPath() +
+    private final UserBean user = UserModel.getInstance().getUser();
+
+    private Bitmap mPhotoImage;
+    private String s;
+    private String address = Environment.getExternalStorageDirectory().getPath() +
             "/" + new Date(System.currentTimeMillis()).getTime() + ".png";
-    private Paint mPaint;
+    private String url;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == CODE_IDENTIFY) {
-                FacePPDecet.decet(mPhotoImage, new FacePPDecet.CallBack() {
-                    @Override
-                    public void success(JSONObject result) {
-                        try {
-                            JSONArray faces = result.getJSONArray("face");
-                            int faceCount = faces.length();
-                            log("faceCount:" + faceCount);
-                            for (int i = 0; i < faceCount; i++) {
-                                //得到单独face对象
-                                JSONObject face = faces.getJSONObject(i);
-                                final String gender = face.getJSONObject("attribute").getJSONObject("gender").getString("value");
-                                String faceId = face.getString("face_id");
-                                log("face_id；" + faceId);
-                                FacePPDecet.identify(mPhotoImage, new FacePPDecet.CallBack() {
-                                    @Override
-                                    public void success(JSONObject result) {
-                                        prepareRsBitmap(result, gender);
-                                        log("辨识成功");
-                                    }
+            switch (msg.what) {
+                case MSG_IDENTIFY:
+                    log("辨识成功");
+                    prepareRsBitmap((JSONObject) msg.obj, msg.getData().getString("gender"));
+                    image.setImageBitmap(mPhotoImage);
+                    break;
+                case MSG_UPLOAD_PHOTO:
+                    final BmobFile file = new BmobFile(new File(s));
+                    file.upload(PhotoActivity.this, new UploadFileListener() {
+                        @Override
+                        public void onSuccess() {
+                            user.setPic(file);
+                            user.update(PhotoActivity.this, new UpdateListener() {
+                                @Override
+                                public void onSuccess() {
+                                    url = file.getFileUrl(PhotoActivity.this);
+                                    toast("原图已上传至云端");
+                                    log("头像原图上传成功 URL" + url);
+                                }
 
-                                    @Override
-                                    public void error(FaceppParseException e) {
-                                        log("辨识失败");
-                                    }
-                                });
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                                @Override
+                                public void onFailure(int i, String s) {
+                                    log("图片上传失败" + s);
+                                }
+                            });
                         }
-                    }
 
-                    @Override
-                    public void error(FaceppParseException e) {
-                        log("辨识失败2");
-                    }
-                });
-
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("头像上传错误" + s);
+                        }
+                    });
+                    break;
             }
 
         }
@@ -125,64 +126,75 @@ public class PhotoActivity extends ParentWithNaviActivity {
      * @param gender
      */
     private void prepareRsBitmap(JSONObject rs, String gender) {
-
+        //将原图绘制在Bitmap上
         Bitmap bitmap = Bitmap.createBitmap(mPhotoImage.getWidth(), mPhotoImage.getHeight(), mPhotoImage.getConfig());
+        log("width" + mPhotoImage.getWidth() + "height" + mPhotoImage.getHeight());
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(mPhotoImage, 0, 0, null);
 
         try {
-            JSONObject faceInfo = rs.getJSONObject("face");
-            JSONObject posObj = faceInfo.getJSONObject("position");
-            JSONArray cans = faceInfo.getJSONArray("candidate");
-            Double temp = 0.0;
-            int pos = 0;
-            for (int t = 0; t < cans.length(); t++) {
-                JSONObject can = cans.getJSONObject(t);
-                Double c = can.getDouble("confidence");
-                if (c > temp) {
-                    temp = c;
-                    pos = t;
+            log(rs.toString());
+            JSONArray faces = rs.getJSONArray("face");
+            int faceNum = faces.length() - 1;
+            if(faceNum < 0){
+                toast("不存在已登记人脸");
+            }else{
+
+                JSONObject face = faces.getJSONObject(faceNum);
+                JSONArray candidate = face.getJSONArray("candidate");
+                JSONObject posObj = face.getJSONObject("position");//人脸位置
+                Double temp = 0.0;
+                int pos = 0;
+                for (int i = 0; i < candidate.length(); i++) {
+                    JSONObject confidences = candidate.getJSONObject(i);
+                    Double confidence = confidences.getDouble("confidence");
+                    if (temp < confidence) {
+                        temp = confidence;
+                        pos = i;
+                    }
                 }
+
+                String name = candidate.getJSONObject(pos).getString("person_name");
+
+                float x = (float) posObj.getJSONObject("center").getDouble("x");
+                float y = (float) posObj.getJSONObject("center").getDouble("y");
+
+                float w = (float) posObj.getDouble("width");
+                float h = (float) posObj.getDouble("height");
+
+                //百分比转为像素值
+                x = x / 100 * bitmap.getWidth();
+                y = y / 100 * bitmap.getHeight();
+
+                w = w / 100 * bitmap.getWidth();
+                h = h / 100 * bitmap.getHeight();
+
+                log("x:" + x + " \ny:" + y + "\nw" + w + "\nh" + h);
+
+                Paint mPaint = new Paint();
+                mPaint.setColor(Color.GREEN);
+                mPaint.setStrokeWidth(5);
+
+                //画BOX
+                canvas.drawLine(x - w / 2, y - h / 2, x - w / 2, y + h / 2, mPaint);
+                canvas.drawLine(x - w / 2, y - h / 2, x + w / 2, y - h / 2, mPaint);
+                canvas.drawLine(x + w / 2, y - h / 2, x + w / 2, y + h / 2, mPaint);
+                canvas.drawLine(x - w / 2, y + h / 2, x + w / 2, y + h / 2, mPaint);
+
+                Bitmap ageBitmap = buildNameBitmap(name, "Male".equals(gender));
+
+                //缩放
+                int ageWidth = ageBitmap.getWidth();
+                int ageHeight = ageBitmap.getHeight();
+                if (bitmap.getWidth() < image.getWidth() && bitmap.getHeight() < image.getHeight()) {
+                    float ratio = Math.max(bitmap.getWidth() * 1.0f / image.getWidth(), bitmap.getHeight() * 1.0f / image.getHeight());
+                    ageBitmap = Bitmap.createScaledBitmap(ageBitmap, (int) (ageWidth * ratio), (int) (ageHeight * ratio), false);
+
+                }
+                canvas.drawBitmap(ageBitmap, x - ageBitmap.getWidth() / 2, y - h / 2 - ageBitmap.getHeight(), null);
+                mPhotoImage = bitmap;
+
             }
-
-            String name = cans.getJSONObject(pos).getString("person_name");
-
-            float x = (float) posObj.getJSONObject("center").getDouble("x");
-            float y = (float) posObj.getJSONObject("center").getDouble("y");
-
-            float w = (float) posObj.getDouble("width");
-            float h = (float) posObj.getDouble("height");
-
-            //百分比转为像素值
-            x = x / 100 * bitmap.getWidth();
-            y = y / 100 * bitmap.getHeight();
-
-            w = w / 100 * bitmap.getWidth();
-            h = h / 100 * bitmap.getHeight();
-
-            mPaint = new Paint();
-            mPaint.setColor(0xffffffff);
-            mPaint.setStrokeWidth(3);
-
-            //画BOX
-            canvas.drawLine(x - w / 2, y - h / 2, x - w / 2, y + h / 2, mPaint);
-            canvas.drawLine(x - w / 2, y - h / 2, x + w / 2, y - h / 2, mPaint);
-            canvas.drawLine(x + w / 2, y - h / 2, x + w / 2, y + h / 2, mPaint);
-            canvas.drawLine(x - w / 2, y + h / 2, x + w / 2, y + h / 2, mPaint);
-
-            Bitmap ageBitmap = buildNameBitmap(name, "Male".equals(gender));
-
-            //缩放
-            int ageWidth = ageBitmap.getWidth();
-            int ageHeight = ageBitmap.getHeight();
-            if (bitmap.getWidth() < image.getWidth() && bitmap.getHeight() < image.getHeight()) {
-                float ratio = Math.max(bitmap.getWidth() * 1.0f / image.getWidth(), bitmap.getHeight() * 1.0f / image.getHeight());
-                ageBitmap = Bitmap.createScaledBitmap(ageBitmap, (int) (ageWidth * ratio), (int) (ageHeight * ratio), false);
-
-            }
-            canvas.drawBitmap(ageBitmap, x - ageBitmap.getWidth() / 2, y - h / 2 - ageBitmap.getHeight(), null);
-            mPhotoImage = bitmap;
-            image.setImageBitmap(mPhotoImage);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -193,15 +205,16 @@ public class PhotoActivity extends ParentWithNaviActivity {
     private Bitmap buildNameBitmap(String name, boolean isMale) {
 
         TextView tv = (TextView) framelayout.findViewById(R.id.age_gender);
-        ageGender.setText(name);
+        tv.setText(name);
+        tv.setText(name);
         if (isMale) {
-            ageGender.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.male), null, null, null);
+            tv.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.male), null, null, null);
         } else {
-            ageGender.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.female), null, null, null);
+            tv.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.female), null, null, null);
         }
-        ageGender.setDrawingCacheEnabled(true);
-        Bitmap bitmap = Bitmap.createBitmap(ageGender.getDrawingCache());
-        ageGender.destroyDrawingCache();
+        tv.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(tv.getDrawingCache());
+        tv.destroyDrawingCache();
         return bitmap;
     }
 
@@ -218,9 +231,49 @@ public class PhotoActivity extends ParentWithNaviActivity {
                 startActivityForResult(new Intent(PhotoActivity.this, ImageActivity.class), CODE_PHOTO);
                 break;
             case R.id.upload:
-                Message msg = new Message();
-                msg.what = CODE_IDENTIFY;
-                handler.sendMessage(msg);
+                FacePPDecet.decet(mPhotoImage, new FacePPDecet.CallBack() {
+                    @Override
+                    public void success(JSONObject result) {
+                        try {
+                            JSONArray faces = result.getJSONArray("face");
+                            int faceCount = faces.length();
+                            log("faceCount:" + faceCount);
+                            for (int i = 0; i < faceCount; i++) {
+                                //得到单独face对象
+                                JSONObject face = faces.getJSONObject(i);
+                                final String gender = face.getJSONObject("attribute").getJSONObject("gender").getString("value");
+                                String faceId = face.getString("face_id");
+                                log("face_id；" + faceId);
+
+                                FacePPDecet.identify(url, faceId, new FacePPDecet.CallBack() {
+                                    @Override
+                                    public void success(JSONObject result) {
+                                        Message msg = new Message();
+                                        Bundle b = new Bundle();
+                                        b.putString("gender", gender);
+                                        msg.obj = result;
+                                        msg.what = MSG_IDENTIFY;
+                                        handler.sendMessage(msg);
+                                    }
+
+                                    @Override
+                                    public void error(FaceppParseException e) {
+                                        log("辨识失败");
+                                    }
+                                });
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void error(FaceppParseException e) {
+                        log("辨识失败2");
+                    }
+                });
+
                 break;
         }
     }
@@ -232,10 +285,21 @@ public class PhotoActivity extends ParentWithNaviActivity {
             if (requestCode == CODE_CAMERA) {
                 mPhotoImage = BitmapFactory.decodeFile(address);
                 image.setImageBitmap(mPhotoImage);
+                log("原图文件地址：" + address);
+                mPhotoImage = BitmapFactory.decodeFile(address);
+                image.setImageBitmap(mPhotoImage);
+                Message msg = new Message();
+                msg.what = MSG_UPLOAD_PHOTO;
+                handler.sendMessage(msg);
             } else if (requestCode == CODE_PHOTO) {
                 List<String> list = data.getStringArrayListExtra("imgs");
-                mPhotoImage = BitmapFactory.decodeFile(list.get(list.size() - 1));
+                s = list.get(list.size() - 1);
+                log("原图文件地址：" + s);
+                mPhotoImage = BitmapFactory.decodeFile(s);
                 image.setImageBitmap(mPhotoImage);
+                Message msg = new Message();
+                msg.what = MSG_UPLOAD_PHOTO;
+                handler.sendMessage(msg);
             }
         }
     }

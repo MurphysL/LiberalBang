@@ -95,7 +95,7 @@ public class DateActivity extends ParentWithNaviActivity {
                     }
                 });
             } else if (msg.what == CODE_IDENTIFY) {
-                FacePPDecet.decet(mPhotoImage, new FacePPDecet.CallBack() {
+               /* FacePPDecet.decet(mPhotoImage, new FacePPDecet.CallBack() {
                     @Override
                     public void success(JSONObject result) {
                         try {
@@ -128,7 +128,7 @@ public class DateActivity extends ParentWithNaviActivity {
                     public void error(FaceppParseException e) {
 
                     }
-                });
+                });*/
                 /*FacePPDecet.identify(mPhotoImage, new FacePPDecet.CallBack() {
                     @Override
                     public void success(JSONObject result) {
