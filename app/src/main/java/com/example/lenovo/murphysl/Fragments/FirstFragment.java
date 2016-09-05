@@ -21,6 +21,7 @@ import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
 import com.example.lenovo.murphysl.bean.MyDate;
 import com.example.lenovo.murphysl.bean.UserBean;
+import com.example.lenovo.murphysl.moment.EditActivity;
 import com.example.lenovo.murphysl.ui.PopupListView;
 import com.example.lenovo.murphysl.ui.PopupView;
 import com.example.lenovo.murphysl.util.DepthPageTransformer;
@@ -363,7 +364,8 @@ public class FirstFragment extends ParentWithNaviFragment {
 
             @Override
             public void clickRight() {
-                startActivity(MapActivity.class, null);
+                //startActivity(MapActivity.class, null);
+                startActivity(EditActivity.class , null);
             }
         };
     }

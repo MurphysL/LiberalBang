@@ -5,11 +5,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.LoginActivity;
-import com.example.lenovo.murphysl.PhotoActivity;
+import com.example.lenovo.murphysl.MapActivity;
 import com.example.lenovo.murphysl.R;
 import com.example.lenovo.murphysl.StarActivity;
 import com.example.lenovo.murphysl.UserHobbyActivity;
@@ -18,7 +17,7 @@ import com.example.lenovo.murphysl.VoiceActivity;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
 import com.example.lenovo.murphysl.bean.UserBean;
-import com.example.lenovo.murphysl.face.FaceActivity;
+import com.example.lenovo.murphysl.face.PhotoActivity;
 import com.example.lenovo.murphysl.model.UserModel;
 
 import butterknife.Bind;
@@ -50,12 +49,9 @@ import cn.bmob.v3.BmobUser;
  */
 
 public class FourthFragment extends ParentWithNaviFragment {
-    private static final String TAG = "FourthFragment";
 
     @Bind(R.id.tv_set_name)
     TextView tv_set_name;
-    @Bind(R.id.btn_logout)
-    Button btnLogout;
 
     public FourthFragment() {
     }
@@ -75,7 +71,7 @@ public class FourthFragment extends ParentWithNaviFragment {
 
             @Override
             public void clickRight() {
-                startActivity(FaceActivity.class, null);
+
             }
         };
     }
@@ -147,5 +143,10 @@ public class FourthFragment extends ParentWithNaviFragment {
     @OnClick(R.id.layout_photo)
     public void onPhotoClick() {
         startActivity(PhotoActivity.class, null);
+    }
+
+    @OnClick(R.id.layout_map)
+    public void onMapClick() {
+        startActivity(MapActivity.class, null);
     }
 }

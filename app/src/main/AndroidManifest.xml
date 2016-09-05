@@ -88,13 +88,14 @@
         <activity android:name=".PoiDetailActivity"/>
         <activity android:name=".StarActivity"/>
         <activity android:name=".VoiceActivity"/>
-        <activity android:name=".face.FaceActivity"/>
-        <activity android:name=".UploadAvatarActivity"/>
-        <activity android:name=".PhotoActivity"/>
+        <activity android:name=".face.UploadAvatarActivity"/>
+        <activity android:name=".face.PhotoActivity"/>
+        <activity android:name=".moment.CommentActivity"/>
+        <activity android:name=".moment.EditActivity"/>
 
         <activity android:name=".MapActivity"/>
         <activity android:name=".ImageActivity"/>
-        <activity android:name=".DateActivity"/>
+        <!--<activity android:name=".DateActivity"/>-->
 
 
         <activity

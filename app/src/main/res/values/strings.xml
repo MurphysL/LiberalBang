@@ -71,6 +71,7 @@
     <string name="set_star">个人排名</string>
     <string name="set_voice">留声机</string>
     <string name="set_photo">云相册</string>
+    <string name="set_map">地图</string>
     <string name="set_blacklist">黑名单</string>
     <!--<string name="set_voice">声音</string>-->
     <string name="set_vibrate">震动</string>
@@ -93,4 +94,25 @@
     <string name="bmob_im_notification_msg">条消息</string>
     <string name="bmob_im_notification_contact">个联系人</string>
     <string name="bmob_im_notification_ticker">您有一条新消息</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="actionbar_activity_not_found">Failed to open intent&#8230;</string>
+    <string name="application_title">Wonderful</string>
+
+    <string name="settings_title">应用设置</string>
+
+    <string name="about_title">关于</string>
+
+    <string-array name="navigations">
+        <item>设置</item>
+        <item>反馈</item>
+        <item>推荐</item>
+        <item>关于</item>
+    </string-array>
+    <string-array name="interpolators">
+        <item>Accelerate</item>
+        <item>Linear</item>
+        <item>AccelerateDecelerate</item>
+        <item>Decelerate</item>
+    </string-array>
 </resources>

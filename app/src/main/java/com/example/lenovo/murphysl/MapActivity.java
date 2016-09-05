@@ -88,6 +88,7 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.baidu.mapapi.utils.AreaUtil;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.Friend;
@@ -1042,8 +1043,9 @@ public class MapActivity extends ParentWithNaviActivity {
                 BitmapDescriptor ff3;
                 Boolean flag = false;
 
-                if(other > mine - TimeUtil.ONE_WEEK){
+                //if(other > mine - TimeUtil.ONE_WEEK){
                     Iterator<Friend> iterator = friendList.iterator();
+
 
                     while(iterator.hasNext()){
                         if(iterator.next().getFriendUser().getObjectId().equals(nearbyInfo.comments)){
@@ -1058,6 +1060,8 @@ public class MapActivity extends ParentWithNaviActivity {
                     }else {
                         ff3 = BitmapDescriptorFactory.fromResource(R.drawable.stranger_mark);
                     }
+
+
 
                     option = new MarkerOptions().icon(ff3).position(res.infoList.get(i).pt);
                     option.animateType(MarkerOptions.MarkerAnimateType.grow);
@@ -1084,10 +1088,17 @@ public class MapActivity extends ParentWithNaviActivity {
                     des.putDouble("radar_distance" , DistanceUtil.getDistance(pt, res.infoList.get(i).pt));
                     option.extraInfo(des);
                     mBaiduMap.addOverlay(option);
-                }
+
+                //}
             }
         }
     }
+
+    /*private void monitorResult(LatLng latLng , LatLng pt) {
+
+        Double distance = DistanceUtil. getDistance(latLng, pt);
+
+    }*/
 
     private class MyRadarSearchListener implements RadarSearchListener {
 
@@ -1212,28 +1223,6 @@ public class MapActivity extends ParentWithNaviActivity {
 
 
 
-
-    /**
-     * 热度搜索
-     */
-   /* private void searchByHeat() {
-        mPoiSearch.searchInCity((new PoiCitySearchOption())
-                .city(city)
-                .keyword(hobby)
-                .pageNum(loadIndex));
-    }*/
-
-    /**
-     * 周边搜索
-     */
-    /*private void searchByDistance() {
-        PoiNearbySearchOption nearbySearchOption = new PoiNearbySearchOption()
-                .keyword(hobby)
-                .sortType(PoiSortType.distance_from_near_to_far)
-                .location(pt)
-                .radius(1000);
-        mPoiSearch.searchNearby(nearbySearchOption);
-    }*/
 
 
 

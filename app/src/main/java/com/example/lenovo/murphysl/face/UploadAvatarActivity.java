@@ -1,4 +1,4 @@
-package com.example.lenovo.murphysl;
+package com.example.lenovo.murphysl.face;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,9 +15,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.lenovo.murphysl.ImageActivity;
+import com.example.lenovo.murphysl.MainActivity;
+import com.example.lenovo.murphysl.R;
 import com.example.lenovo.murphysl.base.BaseActivity;
 import com.example.lenovo.murphysl.bean.UserBean;
-import com.example.lenovo.murphysl.face.FacePPDecet;
 import com.example.lenovo.murphysl.model.UserModel;
 import com.example.lenovo.murphysl.util.BitmapCut;
 import com.facepp.error.FaceppParseException;

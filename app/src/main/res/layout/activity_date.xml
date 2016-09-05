@@ -1,78 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <include layout="@layout/include_navi"/>
-
-       <!-- <Button
-            android:id="@+id/start_date"
-            android:layout_gravity="center_horizontal"
-            android:text="开始"
-            android:layout_width="200dp"
-            android:layout_height="100dp" />
-        <Button
-            android:id="@+id/end_date"
-            android:layout_gravity="center_horizontal"
-            android:text="结束"
-            android:layout_width="200dp"
-            android:layout_height="100dp" />-->
-        <Button
-            android:id="@+id/start_photo"
-            android:layout_gravity="center_horizontal"
-            android:text="拍照"
-            android:layout_width="200dp"
-            android:layout_height="100dp" />
-        <Button
-            android:id="@+id/look_photo"
-            android:layout_gravity="center_horizontal"
-            android:text="查看照片"
-            android:layout_width="200dp"
-            android:layout_height="100dp" />
-
-        <ImageView
-            android:id="@+id/iv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-
-    <!--<ProgressBar
-        android:id="@+id/date_progress"
-        android:visibility="gone"
-        android:layout_centerInParent="true"
-        style="@android:style/Widget.ProgressBar.Large"
-        android:layout_width="@dimen/height_20"
-        android:layout_height="@dimen/height_20" />-->
-
-    <FrameLayout
-        android:id="@+id/framelayout"
-        android:visibility="gone"
-        android:clickable="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ProgressBar
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <include layout="@layout/include_navi"/>
 
 
-        <TextView
-            android:id="@+id/age_gender"
-            android:background="@drawable/hint"
-            android:drawableLeft="@drawable/male"
-            android:visibility="invisible"
-            android:textColor="#ffff0f11"
-            android:textSize="22sp"
-            android:text="1234"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </FrameLayout>
-
-</RelativeLayout>
+</LinearLayout>

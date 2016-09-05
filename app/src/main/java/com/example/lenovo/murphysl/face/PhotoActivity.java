@@ -1,4 +1,4 @@
-package com.example.lenovo.murphysl;
+package com.example.lenovo.murphysl.face;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,9 +17,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.lenovo.murphysl.ImageActivity;
+import com.example.lenovo.murphysl.R;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.UserBean;
-import com.example.lenovo.murphysl.face.FacePPDecet;
 import com.example.lenovo.murphysl.model.UserModel;
 import com.facepp.error.FaceppParseException;
 
@@ -74,6 +75,9 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     log("辨识成功");
                     prepareRsBitmap((JSONObject) msg.obj, msg.getData().getString("gender"));
                     image.setImageBitmap(mPhotoImage);
+                    /**
+                     * 在此处加入相片分发
+                     */
                     break;
                 case MSG_UPLOAD_PHOTO:
                     final BmobFile file = new BmobFile(new File(s));
@@ -238,6 +242,9 @@ public class PhotoActivity extends ParentWithNaviActivity {
                             JSONArray faces = result.getJSONArray("face");
                             int faceCount = faces.length();
                             log("faceCount:" + faceCount);
+                            if(faceCount == 0){
+                                toast("未识别出人脸");
+                            }
                             for (int i = 0; i < faceCount; i++) {
                                 //得到单独face对象
                                 JSONObject face = faces.getJSONObject(i);

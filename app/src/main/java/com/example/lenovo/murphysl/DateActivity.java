@@ -14,14 +14,11 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.MyDate;
 import com.example.lenovo.murphysl.bean.UserBean;
-import com.example.lenovo.murphysl.face.FacePPDecet;
-import com.facepp.error.FaceppParseException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,14 +47,14 @@ import cn.bmob.v3.listener.UploadFileListener;
  * @time: 2016/8/26 13:47
  */
 
-public class DateActivity extends ParentWithNaviActivity {
+/*public class DateActivity extends ParentWithNaviActivity {
 
-    @Bind(R.id.iv)
-    ImageView iv;
-    /*@Bind(R.id.date_progress)
-    ProgressBar dateProgress;*/
-    /*@Bind(R.id.date_progress)
-    ProgressBar dateProgress;*/
+   *//* @Bind(R.id.iv)
+    ImageView iv;*//*
+    *//*@Bind(R.id.date_progress)
+    ProgressBar dateProgress;*//*
+    *//*@Bind(R.id.date_progress)
+    ProgressBar dateProgress;*//*
     @Bind(R.id.framelayout)
     FrameLayout framelayout;
     @Bind(R.id.age_gender)
@@ -71,7 +68,7 @@ public class DateActivity extends ParentWithNaviActivity {
     private String address;
     private static final int CODE_CAMERA = 1;
     private static final int CODE_QUERY = 0;
-    private static final int CODE_IDENTIFY = 2;
+    private static final int MSG_LIKE = 3;
 
     private Handler handler = new Handler() {
         @Override
@@ -94,52 +91,7 @@ public class DateActivity extends ParentWithNaviActivity {
                         log("附近的人失败");
                     }
                 });
-            } else if (msg.what == CODE_IDENTIFY) {
-               /* FacePPDecet.decet(mPhotoImage, new FacePPDecet.CallBack() {
-                    @Override
-                    public void success(JSONObject result) {
-                        try {
-                            JSONArray faces = result.getJSONArray("face");
-                            int faceCount = faces.length();
-                            for (int i = 0; i < faceCount; i++) {
-                                //得到单独face对象
-                                JSONObject face = faces.getJSONObject(i);
-                                final String gender = face.getJSONObject("attribute").getJSONObject("gender").getString("value");
-                                String name = face.getString("face_id");
-                                FacePPDecet.identify(name, new FacePPDecet.CallBack() {
-                                    @Override
-                                    public void success(JSONObject result) {
-                                        prepareRsBitmap(result , gender);
-                                    }
-
-                                    @Override
-                                    public void error(FaceppParseException e) {
-
-                                    }
-                                });
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void error(FaceppParseException e) {
-
-                    }
-                });*/
-                /*FacePPDecet.identify(mPhotoImage, new FacePPDecet.CallBack() {
-                    @Override
-                    public void success(JSONObject result) {
-                        prepareRsBitmap(result);
-                    }
-
-                    @Override
-                    public void error(FaceppParseException e) {
-
-                    }
-                });*/
+            }else if(msg.what == MSG_LIKE){
 
             }
 
@@ -195,7 +147,7 @@ public class DateActivity extends ParentWithNaviActivity {
                 mPhotoImage = BitmapFactory.decodeFile(address);
                 iv.setImageBitmap(mPhotoImage);
                 Message msg = new Message();
-                msg.what = CODE_IDENTIFY;
+                //msg.what = CODE_IDENTIFY;
                 handler.sendMessage(msg);
 
                 bmobFile.upload(this, new UploadFileListener() {
@@ -236,12 +188,12 @@ public class DateActivity extends ParentWithNaviActivity {
         }
     }
 
-    /**
+    *//**
      * 解析数据
      *
      * @param rs
      * @param gender
-     */
+     *//*
     private void prepareRsBitmap(JSONObject rs, String gender) {
 
         Bitmap bitmap = Bitmap.createBitmap(mPhotoImage.getWidth(), mPhotoImage.getHeight(), mPhotoImage.getConfig());
@@ -254,10 +206,10 @@ public class DateActivity extends ParentWithNaviActivity {
             JSONArray cans = faceInfo.getJSONArray("candidate");
             Double temp = 0.0;
             int pos = 0;
-            for(int t = 0 ; t < cans.length() ; t ++){
+            for (int t = 0; t < cans.length(); t++) {
                 JSONObject can = cans.getJSONObject(t);
                 Double c = can.getDouble("confidence");
-                if(c > temp){
+                if (c > temp) {
                     temp = c;
                     pos = t;
                 }
@@ -377,4 +329,10 @@ public class DateActivity extends ParentWithNaviActivity {
     }
 
 
-}
+   *//* @OnClick(R.id.like)
+    public void onClick() {
+        Message msg = new Message();
+        msg.what = MSG_LIKE;
+        handler.sendMessage(msg);
+    }*//*
+}*/

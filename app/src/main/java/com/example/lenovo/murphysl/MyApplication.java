@@ -1,13 +1,18 @@
 package com.example.lenovo.murphysl;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
+import android.graphics.Bitmap;
 import android.os.Vibrator;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.base.UniversalImageLoader;
 import com.example.lenovo.murphysl.model.UserModel;
+import com.example.lenovo.murphysl.util.ActivityManagerUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.orhanobut.logger.Logger;
 
 import java.io.BufferedReader;
@@ -80,5 +85,22 @@ public class MyApplication extends Application {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public DisplayImageOptions getOptions(int drawableId){
+        return new DisplayImageOptions.Builder()
+                .showImageOnLoading(drawableId)
+                .showImageForEmptyUri(drawableId)
+                .showImageOnFail(drawableId)
+                .resetViewBeforeLoading(true)
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
+    }
+
+    public Activity getTopActivity(){
+        return ActivityManagerUtils.getInstance().getTopActivity();
     }
 }

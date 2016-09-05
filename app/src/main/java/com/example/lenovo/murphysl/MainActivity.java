@@ -16,6 +16,7 @@ import com.example.lenovo.murphysl.db.NewFriendManager;
 import com.example.lenovo.murphysl.event.RefreshEvent;
 import com.example.lenovo.murphysl.fragments.FirstFragment;
 import com.example.lenovo.murphysl.fragments.FourthFragment;
+import com.example.lenovo.murphysl.fragments.NewFirstFragment;
 import com.example.lenovo.murphysl.fragments.SecondFragment;
 import com.example.lenovo.murphysl.fragments.ThirdFragment;
 import com.example.lenovo.murphysl.ui.ChangeColorIconWithText;
@@ -171,7 +172,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void initView() {
         super.initView();
-        FirstFragment f1 = new FirstFragment();
+        NewFirstFragment f1 = new NewFirstFragment();
         SecondFragment f2 = new SecondFragment();
         ThirdFragment f3 = new ThirdFragment();
         FourthFragment f4 = new FourthFragment();

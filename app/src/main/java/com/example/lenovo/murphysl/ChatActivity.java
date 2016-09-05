@@ -143,7 +143,7 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
             public void clickRight() {
                 Bundle bundle = new Bundle();
                 bundle.putString("ID"  ,aroundID);
-                startActivity(DateActivity.class,bundle);
+                //startActivity(DateActivity.class,bundle);
             }
         };
     }

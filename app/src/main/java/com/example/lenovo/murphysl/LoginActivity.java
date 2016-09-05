@@ -1,12 +1,6 @@
 package com.example.lenovo.murphysl;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,28 +8,18 @@ import android.widget.ImageView;
 import com.example.lenovo.murphysl.base.BaseActivity;
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.event.FinishEvent;
-import com.example.lenovo.murphysl.face.FacePPDecet;
+import com.example.lenovo.murphysl.face.UploadAvatarActivity;
 import com.example.lenovo.murphysl.model.UserModel;
-import com.facepp.error.FaceppParseException;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMUserInfo;
-import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.LogInListener;
-import cn.bmob.v3.listener.UploadFileListener;
 
 /**
  * LoginActivity

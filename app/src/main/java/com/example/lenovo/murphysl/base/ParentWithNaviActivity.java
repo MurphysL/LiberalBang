@@ -20,8 +20,8 @@ public abstract class ParentWithNaviActivity extends BaseActivity {
 
     public ToolBarListener listener;
     public TextView tv_title;
-    public ImageView tv_left;
     public TextView tv_right;
+    public ImageView tv_left;
 
     /**导航栏标题:必填项
      * @return
@@ -153,7 +153,7 @@ public abstract class ParentWithNaviActivity extends BaseActivity {
     }
 
     /**
-     * 得到当前用户名
+     * 得到当前用户ID
      * @return
      */
     public String getCurrentUid(){
