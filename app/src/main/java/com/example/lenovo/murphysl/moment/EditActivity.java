@@ -1,6 +1,5 @@
 package com.example.lenovo.murphysl.moment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -17,11 +16,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
 import com.example.lenovo.murphysl.ImageActivity;
+import com.example.lenovo.murphysl.MyApplication;
 import com.example.lenovo.murphysl.R;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.QiangYu;
 import com.example.lenovo.murphysl.bean.UserBean;
+import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.model.UserModel;
 import com.example.lenovo.murphysl.util.ActivityUtil;
 import com.example.lenovo.murphysl.util.CacheUtils;
@@ -38,18 +41,18 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
+/**
+ * EditActivity
+ *
+ * @author: lenovo
+ * @time: 2016/8/21 18:01
+ */
 
 public class EditActivity extends ParentWithNaviActivity {
-
-    private static final int REQUEST_CODE_ALBUM = 1;
-    private static final int REQUEST_CODE_CAMERA = 2;
-
-    private UserBean user = UserModel.getInstance().getUser();
-
-    private String dateTime;
 
     @Bind(R.id.edit_content)
     EditText editContent;
@@ -64,12 +67,51 @@ public class EditActivity extends ParentWithNaviActivity {
     @Bind(R.id.commit_edit)
     Button commitEdit;
 
+    private static final int REQUEST_CODE_ALBUM = 1;
+    private static final int REQUEST_CODE_CAMERA = 2;
+
+    private UserBean user = UserModel.getInstance().getUser();
+
+    private String dateTime;
+    private String geo;
+    private BmobGeoPoint loc;
+
+    private Location location;
+    private BDLocationListener mListener = new BDLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+            if (bdLocation != null) {
+                geo = bdLocation.getAddrStr();
+                loc = new BmobGeoPoint(bdLocation.getLongitude() , bdLocation.getLatitude());
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //initNaviView();
         setContentView(R.layout.activity_edit);
+        initNaviView();
         ButterKnife.bind(this);
+        initGeo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        location.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        location.unregisterLocListener(mListener);
+        location.stop();
+        super.onDestroy();
+    }
+
+    private void initGeo() {
+        location = MyApplication.getINSTANCE().location;
+        location.registerLocListener(mListener);
     }
 
     /*
@@ -107,6 +149,8 @@ public class EditActivity extends ParentWithNaviActivity {
         qiangYu.setLove(0);
         qiangYu.setComment(0);
         qiangYu.setPass(true);
+        qiangYu.setGeo(geo);
+        qiangYu.setLoc(loc);
         qiangYu.save(EditActivity.this, new SaveListener() {
 
             @Override

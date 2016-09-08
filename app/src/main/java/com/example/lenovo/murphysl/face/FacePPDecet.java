@@ -1,6 +1,7 @@
 package com.example.lenovo.murphysl.face;
 
 import android.graphics.Bitmap;
+import android.telecom.Call;
 import android.util.Log;
 
 import com.example.lenovo.murphysl.model.UserModel;
@@ -212,6 +213,29 @@ public class FacePPDecet {
         }).start();
     }
 
+    public static void identify(final String url , final CallBack callBack){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequests requests = new HttpRequests(Constant.KEY, Constant.SECRET, true, true);
+                    JSONObject jsonObject = requests.recognitionIdentify(new PostParameters()
+                            .setGroupName("user")
+                            .setUrl(url));
+                    if (callBack != null) {
+                        callBack.success(jsonObject);
+                    }
+                } catch (FaceppParseException e) {
+                    e.printStackTrace();
+
+                    if (callBack != null) {
+                        callBack.error(e);
+                    }
+                }
+            }
+        }).start();
+    }
+
     public static void createPerson(final JSONObject rs, final String name, final CallBack callBack) {
         new Thread(new Runnable() {
             @Override
@@ -297,7 +321,7 @@ public class FacePPDecet {
             public void run() {
                 try {
                     HttpRequests requests = new HttpRequests(Constant.KEY, Constant.SECRET, true, true);
-                    String faceID = rs.getJSONObject("face").getString("face_id");
+                    String faceID = rs.getJSONArray("face").getJSONObject(0).getString("face_id");
 
                     // person/add_face
                     JSONObject jsonObject = requests.personAddFace(new PostParameters()
@@ -322,4 +346,76 @@ public class FacePPDecet {
         }).start();
     }
 
+    public static void verify(final String face , final String person , final CallBack callBack){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequests requests = new HttpRequests(Constant.KEY, Constant.SECRET, true, true);
+                    JSONObject jsonObject = requests.recognitionVerify(new PostParameters()
+                            .setPersonName(person)
+                            .setFaceId(face));
+
+                    if (callBack != null) {
+                        callBack.success(jsonObject);
+                    }
+                } catch (FaceppParseException e) {
+                    e.printStackTrace();
+                    Log.i("verify" , "verify");
+
+                    if (callBack != null) {
+                        callBack.error(e);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public static void verifyTrain(final String person ,final CallBack callBack){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequests requests = new HttpRequests(Constant.KEY, Constant.SECRET, true, true);
+                    JSONObject jsonObject = requests.trainVerify(new PostParameters()
+                            .setPersonName(person));
+
+                    if (callBack != null) {
+                        callBack.success(jsonObject);
+                    }
+
+                } catch (FaceppParseException e) {
+                    e.printStackTrace();
+
+                    if (callBack != null) {
+                        callBack.error(e);
+                    }
+                }
+
+            }
+        }).start();
+    }
+
+    public static void personList(final CallBack callBack){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequests requests = new HttpRequests(Constant.KEY, Constant.SECRET, true, true);
+                    JSONObject jsonObject = requests.infoGetPersonList();
+
+                    if (callBack != null) {
+                        callBack.success(jsonObject);
+                    }
+
+                } catch (FaceppParseException e) {
+                    e.printStackTrace();
+
+                    if (callBack != null) {
+                        callBack.error(e);
+                    }
+                }
+            }
+        }).start();
+    }
 }

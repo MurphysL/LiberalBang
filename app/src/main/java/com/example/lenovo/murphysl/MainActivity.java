@@ -14,7 +14,6 @@ import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.db.NewFriendManager;
 import com.example.lenovo.murphysl.event.RefreshEvent;
-import com.example.lenovo.murphysl.fragments.FirstFragment;
 import com.example.lenovo.murphysl.fragments.FourthFragment;
 import com.example.lenovo.murphysl.fragments.NewFirstFragment;
 import com.example.lenovo.murphysl.fragments.SecondFragment;

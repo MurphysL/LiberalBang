@@ -22,6 +22,8 @@
 
         <include layout="@layout/arc_menu"/>
 
+        <include layout="@layout/start_date"/>
+
     </RelativeLayout>
 
 </LinearLayout>

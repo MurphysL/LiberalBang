@@ -44,13 +44,25 @@
 
     </RelativeLayout>
 
+
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_8"
         android:layout_height="45dp">
-
+        <Button
+            android:id="@+id/food"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_logout_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_food"
+            />
         <Button
             android:id="@+id/btn_eat_chinese"
             style="@style/style_text_white"
@@ -75,6 +87,17 @@
             />
 
         <Button
+            android:id="@+id/btn_eat_coffee"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_eat_buffet_dinner"
+            />
+
+        <Button
             android:id="@+id/btn_eat_fast"
             style="@style/style_text_white"
             android:background="@drawable/btn_login_selector"
@@ -83,17 +106,6 @@
             android:layout_height="45dp"
             android:layout_marginRight="@dimen/activity_vertical_margin"
             android:text="@string/ac_eat_fast"
-            />
-
-        <Button
-            android:id="@+id/btn_eat_coffee"
-            style="@style/style_text_white"
-            android:background="@drawable/btn_login_selector"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:text="@string/ac_eat_coffee"
             />
 
         <Button
@@ -113,7 +125,17 @@
         android:layout_marginTop="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_8"
         android:layout_height="45dp">
-
+        <Button
+            android:id="@+id/entertainment"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_logout_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_entertainment"
+            />
         <Button
             android:id="@+id/btn_KTV"
             style="@style/style_text_white"
@@ -177,6 +199,17 @@
         android:layout_height="45dp">
 
         <Button
+            android:id="@+id/view"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_logout_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_tour_view"
+            />
+        <Button
             android:id="@+id/btn_zoo"
             style="@style/style_text_white"
             android:background="@drawable/btn_login_selector"
@@ -230,52 +263,26 @@
             android:layout_marginRight="@dimen/activity_vertical_margin"
             android:text="@string/ac_tour_sight" />
     </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/layout_sort"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/about_top_bg"
-        android:minHeight="@dimen/height_40"
-        android:layout_marginTop="@dimen/margin_16"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
-
-        <TextView
-            style="@style/style_text_black"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:text="@string/add_sort" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
-
-            <ImageView
-                android:id="@+id/iv_sort"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_20"
-                android:layout_alignParentLeft="true"
-                android:layout_marginTop="@dimen/margin_5"
-                android:layout_marginBottom="@dimen/margin_5"
-                android:layout_marginLeft="@dimen/margin_16"
-                android:src="@mipmap/ic_launcher" />
-        </LinearLayout>
-
-    </RelativeLayout>
-
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_height="45dp">
+
         <Button
-            android:id="@+id/btn_sort_heat"
+            android:id="@+id/ball"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_logout_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_play_ball"
+            />
+        <Button
+            android:id="@+id/basketball"
             style="@style/style_text_white"
             android:background="@drawable/btn_login_selector"
             android:layout_weight="1"
@@ -283,12 +290,72 @@
             android:layout_height="45dp"
             android:layout_marginLeft="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_vertical_margin"
-
-            android:text="@string/sort_heat"
+            android:text="@string/ac_play_basketball"
             />
 
         <Button
-            android:id="@+id/btn_sort_distance"
+            android:id="@+id/football"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_play_football" />
+
+        <Button
+            android:id="@+id/badminton"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_play_badminton"
+            />
+
+        <Button
+            android:id="@+id/tableTennis"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_play_tableTennis"
+            />
+
+        <Button
+            android:id="@+id/volleyball"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_play_volleyball" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_height="45dp">
+
+        <Button
+            android:id="@+id/sport"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_logout_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_sport_sport"
+            />
+        <Button
+            android:id="@+id/climb"
             style="@style/style_text_white"
             android:background="@drawable/btn_login_selector"
             android:layout_weight="1"
@@ -296,10 +363,54 @@
             android:layout_height="45dp"
             android:layout_marginLeft="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_sport_climb"
+            />
 
-            android:text="@string/sort_distance" />
+        <Button
+            android:id="@+id/swim"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_sport_swim" />
 
+        <Button
+            android:id="@+id/run"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_sport_run"
+            />
+
+        <Button
+            android:id="@+id/parkour"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_sport_parkour"
+            />
+
+        <Button
+            android:id="@+id/taiJi"
+            style="@style/style_text_white"
+            android:background="@drawable/btn_login_selector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:text="@string/ac_sport_taiJi" />
     </LinearLayout>
+
+
+
 
 
     <Button
@@ -313,5 +424,4 @@
         android:layout_marginLeft="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_vertical_margin"
         android:text="确认" />
-
 </LinearLayout>

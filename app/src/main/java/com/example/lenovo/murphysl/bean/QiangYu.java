@@ -4,14 +4,11 @@ import java.io.Serializable;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.datatype.BmobRelation;
 
 public class QiangYu extends BmobObject implements Serializable{
 
-	/**
-	 * qiang yu entity,每个列表item内容
-	 * 2014/4/27
-	 */
 	private static final long serialVersionUID = -6280656428527540320L;
 	
 	private UserBean author;
@@ -22,6 +19,8 @@ public class QiangYu extends BmobObject implements Serializable{
 	private boolean isPass;
 	private boolean myLove;//赞
 	private BmobRelation relation;
+	private String geo;
+	private BmobGeoPoint loc;
 
 	public BmobRelation getRelation() {
 		return relation;
@@ -71,6 +70,19 @@ public class QiangYu extends BmobObject implements Serializable{
 	public void setMyLove(boolean myLove) {
 		this.myLove = myLove;
 	}
+	public void setGeo(String geo) {
+		this.geo = geo;
+	}
+	public String getGeo() {
+		return geo;
+	}
+	public BmobGeoPoint getLoc() {
+		return loc;
+	}
+	public void setLoc(BmobGeoPoint loc) {
+		this.loc = loc;
+	}
+
 	@Override
 	public String toString() {
 		return "QiangYu [author=" + author + ", content=" + content

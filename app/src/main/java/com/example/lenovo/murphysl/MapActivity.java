@@ -3,12 +3,8 @@ package com.example.lenovo.murphysl;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -88,11 +84,11 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
-import com.baidu.mapapi.utils.AreaUtil;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.Friend;
 import com.example.lenovo.murphysl.bean.MyDate;
+import com.example.lenovo.murphysl.bean.QiangYu;
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.bean.VoiceBean;
 import com.example.lenovo.murphysl.com.baidu.mapapi.overlayutil.BikingRouteOverlay;
@@ -116,7 +112,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -129,16 +124,15 @@ import butterknife.OnClick;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DownloadFileListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.GetListener;
-import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * MapActivity
- *
+ * <p/>
  * 问题：MapActivity关闭过快时，location关闭不及时，导致重启MapActivity定位失败
  *
  * @author: lenovo
@@ -167,6 +161,8 @@ public class MapActivity extends ParentWithNaviActivity {
     Button next;
     @Bind(R.id.routeplan)
     LinearLayout routeplan;
+    @Bind(R.id.start_date)
+    Button startDate;
 
     private BaiduMap mBaiduMap = null;
 
@@ -190,6 +186,8 @@ public class MapActivity extends ParentWithNaviActivity {
     private MyOrientationListener myOrientationListener;
     private LinkedList<LocationEntity> locationList = new LinkedList<LocationEntity>(); // 存放历史定位结果的链表，最大存放当前结果的前5次定位结果
     private boolean isFirstIn = true;
+
+
     /**
      * 封装定位结果和时间的实体类
      */
@@ -197,6 +195,7 @@ public class MapActivity extends ParentWithNaviActivity {
         BDLocation location;
         long time;
     }
+
     private BDLocationListener mListener = new BDLocationListener() {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
@@ -215,7 +214,6 @@ public class MapActivity extends ParentWithNaviActivity {
     private MyRadarUploadInfoCallback myRadarUploadInfoCallback;
     private TextView popupText = null; // 泡泡view
     private boolean radar_flag = true;
-
 
 
     /**
@@ -482,7 +480,7 @@ public class MapActivity extends ParentWithNaviActivity {
 
             @Override
             public void onError(int i, String s) {
-               log("获取好友错误："+ s + "(" + i + ")");
+                log("获取好友错误：" + s + "(" + i + ")");
             }
         });
 
@@ -580,10 +578,10 @@ public class MapActivity extends ParentWithNaviActivity {
     private void initEvent() {
 
         Bundle bundle = getIntent().getBundleExtra("com.example.lenovo.murphysl");
-        if(bundle != null){
+        if (bundle != null) {
             String c = bundle.getString("chat_location");
-            if(c != null){
-                if(c.equals("y")){
+            if (c != null) {
+                if (c.equals("y")) {
                     poisearch.setVisibility(View.VISIBLE);
                     search_visible_flag = false;
                     etCity.setText(city);
@@ -658,16 +656,16 @@ public class MapActivity extends ParentWithNaviActivity {
                         toast(view.getTag());
                         break;
                     case 5:
-                        if(startNode == null || enPlanNode == null){
+                        if (startNode == null || enPlanNode == null) {
                             toast("您还未进行路线规划");
-                        }else{
+                        } else {
                             mShareUrlSearch.requestRouteShareUrl(new RouteShareURLOption().from(startNode).to(enPlanNode).routMode(mRouteShareMode));
                             toast(view.getTag());
                         }
                         break;
                     case 6:
                         mBaiduMap.clear();
-                        downloadVoice();
+                        downloadMoment();
                         break;
 
                 }
@@ -730,35 +728,107 @@ public class MapActivity extends ParentWithNaviActivity {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * 录音
      */
     private List<BmobFile> voiceList = new ArrayList<>();
     private List<LatLng> geoList = new ArrayList<>();
     private List<UserBean> userList = new ArrayList<>();
-    private void downloadVoice(){
+
+    private void downloadVoice() {
         BmobQuery<VoiceBean> q = new BmobQuery<>();
         q.findObjects(MapActivity.this, new FindListener<VoiceBean>() {
             @Override
             public void onSuccess(List<VoiceBean> list) {
                 Iterator<VoiceBean> i = list.iterator();
                 log("size" + list.size());
-                while(i.hasNext()){
+                while (i.hasNext()) {
                     VoiceBean voiceBean = i.next();
                     BmobFile voice = voiceBean.getFile();
                     UserBean user = voiceBean.getUser();
                     Double latitude = voiceBean.getGeo().getLatitude();
-                    Double longitude= voiceBean.getGeo().getLongitude();
-                    LatLng latLng = new LatLng(latitude , longitude);
+                    Double longitude = voiceBean.getGeo().getLongitude();
+                    LatLng latLng = new LatLng(latitude, longitude);
 
                     voiceList.add(voice);
                     geoList.add(latLng);
                     userList.add(user);
 
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("geo" , latLng);
-                    bundle.putSerializable("voice" , voice);
-                    bundle.putSerializable("user" , user);
+                    bundle.putParcelable("geo", latLng);
+                    bundle.putSerializable("voice", voice);
+                    bundle.putSerializable("user", user);
 
                     //构建Marker图标
                     BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
@@ -791,16 +861,16 @@ public class MapActivity extends ParentWithNaviActivity {
 
             if (marker != null) {
                 LatLng geo = marker.getExtraInfo().getParcelable("geo");
-                BmobFile voice  = (BmobFile) marker.getExtraInfo().getSerializable("voice");
+                BmobFile voice = (BmobFile) marker.getExtraInfo().getSerializable("voice");
 
                 final Bundle bundle = new Bundle();
-                bundle.putString("voice" , voice.getFileUrl(MapActivity.this));
+                bundle.putString("voice", voice.getFileUrl(MapActivity.this));
                 //MediaPlayer mp = new MediaPlayer();
                 //try {
-                    log("url" + Uri.parse(voice.getFileUrl(MapActivity.this)));
-                    //mp.setDataSource(MapActivity.this , Uri.parse(voice.getFileUrl(MapActivity.this)));
+                log("url" + Uri.parse(voice.getFileUrl(MapActivity.this)));
+                //mp.setDataSource(MapActivity.this , Uri.parse(voice.getFileUrl(MapActivity.this)));
                 //} catch (IOException e) {
-                    //e.printStackTrace();
+                //e.printStackTrace();
                 //}
                 //mp.start();
                /* voice.download(MapActivity.this, new DownloadFileListener() {
@@ -848,7 +918,7 @@ public class MapActivity extends ParentWithNaviActivity {
                     @Override
                     public void onClick(View v) {
                         log("点击");
-                        startActivity(PlayerActivity.class , bundle);
+                        startActivity(PlayerActivity.class, bundle);
                     }
                 });
 
@@ -862,6 +932,167 @@ public class MapActivity extends ParentWithNaviActivity {
             }
         }
     }
+
+
+    /**
+     * 朋友圈
+     */
+
+    private void downloadMoment() {
+        BmobQuery<QiangYu> q = new BmobQuery<>();
+        q.findObjects(MapActivity.this, new FindListener<QiangYu>() {
+            @Override
+            public void onSuccess(List<QiangYu> list) {
+                Iterator<QiangYu> i = list.iterator();
+                log("size" + list.size());
+                while (i.hasNext()) {
+                    QiangYu voiceBean = i.next();
+                    final String content = voiceBean.getContent();
+                    final BmobFile file = voiceBean.getContentfigureurl();
+                    final int love = voiceBean.getLove();
+                    final UserBean autor = voiceBean.getAuthor();
+                    String id = voiceBean.getAuthor().getObjectId();
+                    log("id" + id);
+                    Double latitude = voiceBean.getLoc().getLatitude();
+                    Double longitude = voiceBean.getLoc().getLongitude();
+                    final LatLng latLng = new LatLng(latitude, longitude);
+                    BmobQuery<UserBean> q = new BmobQuery<UserBean>();
+                    q.getObject(MapActivity.this, id, new GetListener<UserBean>() {
+                        @Override
+                        public void onSuccess(UserBean userBean) {
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("loc", latLng);
+                            bundle.putString("content" , content);
+                            bundle.putSerializable("fileUrl" , file);
+                            bundle.putInt("love" , love);
+                            bundle.putSerializable("autor" , userBean);
+
+
+                            //构建Marker图标
+                            BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+                            //构建MarkerOption，用于在地图上添加Marker
+                            OverlayOptions option = new MarkerOptions()
+                                    .animateType(MarkerOptions.MarkerAnimateType.grow)
+                                    .position(latLng)
+                                    .extraInfo(bundle)
+                                    .icon(bitmap);
+                            //在地图上添加Marker，并显示
+                            mBaiduMap.addOverlay(option);
+                            mBaiduMap.setOnMarkerClickListener(new MyMomentMarkerClickListener());
+                            toast("下载完成");
+                            log("下载完成");
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+
+                        }
+                    });
+
+
+                    //voiceList.add(voice);
+                    //geoList.add(latLng);
+                    //userList.add(user);
+
+                }
+
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+        });
+    }
+
+    private class MyMomentMarkerClickListener implements BaiduMap.OnMarkerClickListener {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            mBaiduMap.hideInfoWindow();
+
+            if (marker != null) {
+                Bundle b = marker.getExtraInfo();
+                LatLng geo = marker.getExtraInfo().getParcelable("loc");
+                BmobFile file = (BmobFile) marker.getExtraInfo().getSerializable("fileUrl");
+                String content = marker.getExtraInfo().getString("content");
+                int love = marker.getExtraInfo().getInt("love");
+                UserBean autor = (UserBean) marker.getExtraInfo().getSerializable("autor");
+
+                final Bundle bundle = new Bundle();
+                bundle.putSerializable("u" , autor);
+
+                file.download(MapActivity.this, new DownloadFileListener() {
+                    @Override
+                    public void onSuccess(String s) {
+                        toast("下载完成");
+
+                    }
+
+                    @Override
+                    public void onFailure(int i, String s) {
+                        toast("下载失败");
+                    }
+                });
+
+                popupText = new TextView(MapActivity.this);
+                popupText.setBackgroundResource(R.drawable.popup);
+                popupText.setTextColor(0xFF000000);
+                popupText.setText("用户" + autor.getUsername() +  "\n动态" + content);
+                popupText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        log("点击");
+                        startActivity(UserInfoActivity.class, bundle);
+                    }
+                });
+
+                mBaiduMap.showInfoWindow(new InfoWindow(popupText, marker.getPosition(), -47));
+                MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(marker.getPosition());
+                mBaiduMap.setMapStatus(update);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+    @OnClick(R.id.start_date)
+    public void onClick() {
+        MyDate myDate = new MyDate();
+        myDate.setUser(BmobUser.getCurrentUser(MapActivity.this , UserBean.class));
+        myDate.setFriend(tempUser);
+        myDate.update(MapActivity.this, new UpdateListener() {
+            @Override
+            public void onSuccess() {
+                log("开始Date");
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -977,30 +1208,6 @@ public class MapActivity extends ParentWithNaviActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * 开始自动上传
      */
@@ -1043,24 +1250,24 @@ public class MapActivity extends ParentWithNaviActivity {
                 BitmapDescriptor ff3;
                 Boolean flag = false;
 
-                //if(other > mine - TimeUtil.ONE_WEEK){
+                if (other > mine - TimeUtil.ONE_DAY) {
+
                     Iterator<Friend> iterator = friendList.iterator();
 
 
-                    while(iterator.hasNext()){
-                        if(iterator.next().getFriendUser().getObjectId().equals(nearbyInfo.comments)){
+                    while (iterator.hasNext()) {
+                        if (iterator.next().getFriendUser().getObjectId().equals(nearbyInfo.comments)) {
                             flag = true;
                             break;
                         }
                         flag = false;
                     }
 
-                    if(flag){
+                    if (flag) {
                         ff3 = BitmapDescriptorFactory.fromResource(R.drawable.friend_mark);
-                    }else {
+                    } else {
                         ff3 = BitmapDescriptorFactory.fromResource(R.drawable.stranger_mark);
                     }
-
 
 
                     option = new MarkerOptions().icon(ff3).position(res.infoList.get(i).pt);
@@ -1074,10 +1281,10 @@ public class MapActivity extends ParentWithNaviActivity {
                             @Override
                             public void done(UserBean s, BmobException e) {
                                 if (e == null) {
-                                    des.putString("radar_id" , s.getObjectId());
-                                    des.putString("radar_name" , s.getUsername());
-                                    des.putString("radar_hobby" , s.getHobby());
-                                    des.putString("radar_sort" , s.getSort());
+                                    des.putString("radar_id", s.getObjectId());
+                                    des.putString("radar_name", s.getUsername());
+                                    des.putString("radar_hobby", s.getHobby());
+                                    des.putString("radar_sort", s.getSort());
                                 }
                             }
 
@@ -1085,20 +1292,14 @@ public class MapActivity extends ParentWithNaviActivity {
 
                     }
 
-                    des.putDouble("radar_distance" , DistanceUtil.getDistance(pt, res.infoList.get(i).pt));
+                    des.putDouble("radar_distance", DistanceUtil.getDistance(pt, res.infoList.get(i).pt));
                     option.extraInfo(des);
                     mBaiduMap.addOverlay(option);
 
-                //}
+                }
             }
         }
     }
-
-    /*private void monitorResult(LatLng latLng , LatLng pt) {
-
-        Double distance = DistanceUtil. getDistance(latLng, pt);
-
-    }*/
 
     private class MyRadarSearchListener implements RadarSearchListener {
 
@@ -1151,6 +1352,8 @@ public class MapActivity extends ParentWithNaviActivity {
     public String around_sort;
     public Double around_distance;
 
+    private UserBean tempUser;
+
     private class MyRadarMarkerClickListener implements BaiduMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
@@ -1163,7 +1366,7 @@ public class MapActivity extends ParentWithNaviActivity {
                 around_sort = marker.getExtraInfo().getString("radar_sort");
                 around_distance = marker.getExtraInfo().getDouble("radar_distance");
 
-                EventBus.getDefault().post(new UserEvent(around_id , around_name , around_hobby , around_sort , around_distance));
+                EventBus.getDefault().post(new UserEvent(around_id, around_name, around_hobby, around_sort, around_distance));
 
                 final Bundle bundle = new Bundle();
                 UserModel.getInstance().queryUsers(around_name, 20, new FindListener<UserBean>() {
@@ -1171,7 +1374,8 @@ public class MapActivity extends ParentWithNaviActivity {
                     public void onSuccess(List<UserBean> list) {
                         for (int i = 0; i < list.size(); i++) {
                             if (list.get(i).getUsername().equals(around_name)) {
-                                bundle.putSerializable("u", list.get(i));
+                                tempUser = list.get(i);
+                                bundle.putSerializable("u", tempUser);
                             }
                         }
                     }
@@ -1210,6 +1414,8 @@ public class MapActivity extends ParentWithNaviActivity {
                     }
                 });
 
+                startDate.setVisibility(View.VISIBLE);
+
                 mBaiduMap.showInfoWindow(new InfoWindow(popupText, marker.getPosition(), -47));
                 MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(marker.getPosition());
                 mBaiduMap.setMapStatus(update);
@@ -1220,6 +1426,30 @@ public class MapActivity extends ParentWithNaviActivity {
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1267,6 +1497,7 @@ public class MapActivity extends ParentWithNaviActivity {
                 break;
         }
     }
+
     public void searchPoi() {
         String cityTemp = etCity.getText().toString();
         searchKey = searchkey.getText().toString();
@@ -1334,22 +1565,22 @@ public class MapActivity extends ParentWithNaviActivity {
                 String poiTag = result.getTag();
                 String poiTime = result.getShopHours();
                 Double poiHRating = result.getHygieneRating();//卫生
-                Double poiTRating= result.getTasteRating();//味道
-                Double poiORating= result.getOverallRating();//综合
+                Double poiTRating = result.getTasteRating();//味道
+                Double poiORating = result.getOverallRating();//综合
                 Double poiSRating = result.getServiceRating();//服务
 
-                Bundle bundle =  new Bundle();
-                bundle.putString("poiname" , poiname);
-                bundle.putString("poiAddress" , poiAddress);
-                bundle.putString("poiTele" , poiTele);
-                bundle.putString("poiTag" , poiTag);
-                bundle.putDouble("poiHRating" , poiHRating);
-                bundle.putDouble("poiTRating" , poiTRating);
-                bundle.putDouble("poiORating" , poiORating);
-                bundle.putDouble("poiSRating" , poiSRating);
-                bundle.putString("poiTime" , poiTime);
-                bundle.putString("url" , poiUrl);
-                startActivity(PoiDetailActivity.class , bundle);
+                Bundle bundle = new Bundle();
+                bundle.putString("poiname", poiname);
+                bundle.putString("poiAddress", poiAddress);
+                bundle.putString("poiTele", poiTele);
+                bundle.putString("poiTag", poiTag);
+                bundle.putDouble("poiHRating", poiHRating);
+                bundle.putDouble("poiTRating", poiTRating);
+                bundle.putDouble("poiORating", poiORating);
+                bundle.putDouble("poiSRating", poiSRating);
+                bundle.putString("poiTime", poiTime);
+                bundle.putString("url", poiUrl);
+                startActivity(PoiDetailActivity.class, bundle);
             }
         }
 
@@ -1378,28 +1609,6 @@ public class MapActivity extends ParentWithNaviActivity {
             return true;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private class MySuggestionResultListener implements OnGetSuggestionResultListener {
@@ -1712,8 +1921,6 @@ public class MapActivity extends ParentWithNaviActivity {
     }
 
 
-
-
     /**
      * 使用PoiOverlay 展示poi点，在poi被点击时发起短串请求.
      */
@@ -1733,8 +1940,6 @@ public class MapActivity extends ParentWithNaviActivity {
             return true;
         }
     }
-
-
 
 
     private class MyGetGeoCoderResultListener implements OnGetGeoCoderResultListener {

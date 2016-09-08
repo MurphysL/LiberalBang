@@ -66,6 +66,7 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 					.findViewById(R.id.item_action_love);
 			viewHolder.comment = (TextView) convertView
 					.findViewById(R.id.item_action_comment);
+			viewHolder.geo = (TextView) convertView.findViewById(R.id.content_geo);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
@@ -112,6 +113,7 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 		});
 		viewHolder.userName.setText(entity.getAuthor().getUsername());
 		viewHolder.contentText.setText(entity.getContent());
+		viewHolder.geo.setText(entity.getGeo());
 		if (null == entity.getContentfigureurl()) {
 			viewHolder.contentImage.setVisibility(View.GONE);
 		} else {
@@ -227,5 +229,6 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 
 		public TextView love;
 		public TextView comment;
+		public TextView geo;
 	}
 }

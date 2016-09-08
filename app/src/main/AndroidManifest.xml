@@ -92,6 +92,8 @@
         <activity android:name=".face.PhotoActivity"/>
         <activity android:name=".moment.CommentActivity"/>
         <activity android:name=".moment.EditActivity"/>
+        <activity android:name=".PersonPhotoActivity"/>
+        <activity android:name=".face.SimilarActivity"/>
 
         <activity android:name=".MapActivity"/>
         <activity android:name=".ImageActivity"/>

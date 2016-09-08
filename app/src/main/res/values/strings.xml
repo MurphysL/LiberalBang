@@ -40,24 +40,42 @@
     <string name="new_friend">新的朋友</string>
 
     <string name="add_activity">活动</string>
+    <string name="ac_food">餐饮</string>
     <string name="ac_eat_chinese">中餐</string>
     <string name="ac_eat_west">西餐</string>
     <string name="ac_eat_fast">快餐</string>
-    <string name="ac_eat_coffee">咖啡厅</string>
+    <string name="ac_eat_buffet_dinner">自助餐</string>
     <string name="ac_eat_snack">小吃</string>
-    
+
     <string name="ac_movie">电影</string>
-    <string name="ac_gym">体育馆</string>
+    <string name="ac_gym">棋牌</string>
     <string name="ac_internet">网吧</string>
     <string name="ac_bar">酒吧</string>
+    <string name="ac_entertainment">娱乐</string>
     <string name="ac_KTV">KTV</string>
 
-    <string name="ac_tour_sight">景点</string>
-    <string name="ac_tour_park">公园</string>
+    <string name="ac_tour_sight">图书馆</string>
+    <string name="ac_tour_view">减压</string>
+    <string name="ac_tour_park">主题公园</string>
     <string name="ac_tour_zoo">动物园</string>
     <string name="ac_tour_amusement">游乐园</string>
     <string name="ac_tour_museum">博物馆</string>
-    
+
+    <string name="ac_play_ball">球类</string>
+    <string name="ac_play_basketball">篮球</string>
+    <string name="ac_play_football">足球</string>
+    <string name="ac_play_badminton">羽毛球</string>
+    <string name="ac_play_tableTennis">乒乓球</string>
+    <string name="ac_play_volleyball">排球</string>
+
+    <string name="ac_sport_sport">运动</string>
+    <string name="ac_sport_climb">爬山</string>
+    <string name="ac_sport_swim">游泳</string>
+    <string name="ac_sport_run">跑步</string>
+    <string name="ac_sport_parkour">跑酷</string>
+    <string name="ac_sport_taiJi">太极</string>
+
+
     <string name="add_sort">排序方式</string>
     <string name="sort_heat">热度优先</string>
     <string name="sort_distance">距离优先</string>
@@ -70,8 +88,10 @@
     <string name="set_hobby">个人偏好</string>
     <string name="set_star">个人排名</string>
     <string name="set_voice">留声机</string>
-    <string name="set_photo">云相册</string>
+    <string name="set_photo">人脸识别</string>
     <string name="set_map">地图</string>
+    <string name="set_person">个人相册</string>
+    <string name="set_similar">相似人脸</string>
     <string name="set_blacklist">黑名单</string>
     <!--<string name="set_voice">声音</string>-->
     <string name="set_vibrate">震动</string>

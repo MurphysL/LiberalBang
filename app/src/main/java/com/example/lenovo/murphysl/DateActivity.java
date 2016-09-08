@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
@@ -47,14 +48,15 @@ import cn.bmob.v3.listener.UploadFileListener;
  * @time: 2016/8/26 13:47
  */
 
-/*public class DateActivity extends ParentWithNaviActivity {
+/*
+public class DateActivity extends ParentWithNaviActivity {
 
-   *//* @Bind(R.id.iv)
-    ImageView iv;*//*
-    *//*@Bind(R.id.date_progress)
-    ProgressBar dateProgress;*//*
-    *//*@Bind(R.id.date_progress)
-    ProgressBar dateProgress;*//*
+    @Bind(R.id.iv)
+    ImageView iv;
+    @Bind(R.id.date_progress)
+    ProgressBar dateProgress;
+    @Bind(R.id.date_progress)
+    ProgressBar dateProgress;
     @Bind(R.id.framelayout)
     FrameLayout framelayout;
     @Bind(R.id.age_gender)
@@ -188,12 +190,12 @@ import cn.bmob.v3.listener.UploadFileListener;
         }
     }
 
-    *//**
+    *
      * 解析数据
      *
      * @param rs
      * @param gender
-     *//*
+
     private void prepareRsBitmap(JSONObject rs, String gender) {
 
         Bitmap bitmap = Bitmap.createBitmap(mPhotoImage.getWidth(), mPhotoImage.getHeight(), mPhotoImage.getConfig());
@@ -329,10 +331,11 @@ import cn.bmob.v3.listener.UploadFileListener;
     }
 
 
-   *//* @OnClick(R.id.like)
+    @OnClick(R.id.like)
     public void onClick() {
         Message msg = new Message();
         msg.what = MSG_LIKE;
         handler.sendMessage(msg);
-    }*//*
-}*/
+    }
+}
+*/

@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -77,6 +76,8 @@ public class CommentActivity extends ParentWithNaviActivity {
     Button commentCommit;
     @Bind(R.id.user_logo)
     ImageView userLogo;
+    @Bind(R.id.content_geo)
+    TextView contentGeo;
 
     private CommentAdapter mAdapter;
 
@@ -121,6 +122,7 @@ public class CommentActivity extends ParentWithNaviActivity {
         if (mood2 == null) {
             return;
         }
+        contentGeo.setText(qiangYu.getGeo().toString());
         userName.setText(qiangYu.getAuthor().getUsername());
         commentItemContent.setText(qiangYu.getContent());
         if (null == qiangYu.getContentfigureurl()) {
@@ -133,8 +135,7 @@ public class CommentActivity extends ParentWithNaviActivity {
                             .getContentfigureurl().getFileUrl(
                                     CommentActivity.this),
                     commentItemImage,
-                    MyApplication.getINSTANCE().getOptions(
-                            R.drawable.bg_pic_loading),
+                    MyApplication.getINSTANCE().getOptions(R.drawable.bg_pic_loading),
                     new SimpleImageLoadingListener() {
 
                         @Override
@@ -396,8 +397,8 @@ public class CommentActivity extends ParentWithNaviActivity {
     }
 
     @Override
-    public ParentWithNaviActivity.ToolBarListener setToolBarListener() {
-        return new ParentWithNaviActivity.ToolBarListener() {
+    public ToolBarListener setToolBarListener() {
+        return new ToolBarListener() {
             @Override
             public void clickLeft() {
                 finish();

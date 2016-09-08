@@ -33,25 +33,25 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/composer_place"
+            android:src="@drawable/c_l"
             android:tag="路线规划"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/composer_place"
+            android:src="@drawable/c_s"
             android:tag="地点搜索"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/composer_place"
+            android:src="@drawable/c_f"
             android:tag="链接分享"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/composer_place"
+            android:src="@drawable/c_p"
             android:tag="6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

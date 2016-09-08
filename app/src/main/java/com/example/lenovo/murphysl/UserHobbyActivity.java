@@ -29,8 +29,12 @@ import cn.bmob.v3.listener.UpdateListener;
  */
 
 public class UserHobbyActivity extends ParentWithNaviActivity {
+    @Override
+    protected String title() {
+        return null;
+    }
 
-    @Bind(R.id.btn_eat_chinese)
+    /*@Bind(R.id.btn_eat_chinese)
     Button btnEatChinese;
     @Bind(R.id.btn_eat_west)
     Button btnEatWest;
@@ -220,5 +224,5 @@ public class UserHobbyActivity extends ParentWithNaviActivity {
                 toast("上传偏好失败"  + "(" + i + ")");
             }
         });
-    }
+    }*/
 }
