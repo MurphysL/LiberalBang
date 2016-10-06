@@ -66,7 +66,7 @@
         android:layout_height="@dimen/height_title"
         android:layout_margin="@dimen/activity_vertical_margin"
         android:onClick="onRegisterClick"
-        android:background="@drawable/btn_login_selector"
+        android:background="@drawable/selector_click"
         android:gravity="center"
         android:text="@string/register"
         android:textColor="@color/base_color_text_white"

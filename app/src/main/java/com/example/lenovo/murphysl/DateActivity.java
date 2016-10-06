@@ -1,341 +1,459 @@
 package com.example.lenovo.murphysl;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Uri;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.view.Window;
+import android.view.WindowManager;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.mapapi.map.ArcOptions;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.Overlay;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.map.Projection;
+import com.baidu.mapapi.map.Stroke;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
-import com.example.lenovo.murphysl.bean.MyDate;
-import com.example.lenovo.murphysl.bean.UserBean;
+import com.example.lenovo.murphysl.bean.MoveLine;
+import com.example.lenovo.murphysl.event.LocationEvent;
+import com.example.lenovo.murphysl.map.Location;
+import com.example.lenovo.murphysl.map.Location2;
+import com.example.lenovo.murphysl.map.MyOrientationListener;
+import com.example.lenovo.murphysl.model.UserModel;
+import com.example.lenovo.murphysl.util.LocConfig;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.File;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.listener.DownloadFileListener;
+import cn.bmob.v3.datatype.BmobGeoPoint;
+import cn.bmob.v3.listener.DeleteListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.GetListener;
 import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UploadFileListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * DateActivity
  *
  * @author: lenovo
- * @time: 2016/8/26 13:47
+ * @time: 2016/8/ 13:47
  */
 
-/*
 public class DateActivity extends ParentWithNaviActivity {
 
-    @Bind(R.id.iv)
-    ImageView iv;
-    @Bind(R.id.date_progress)
-    ProgressBar dateProgress;
-    @Bind(R.id.date_progress)
-    ProgressBar dateProgress;
-    @Bind(R.id.framelayout)
-    FrameLayout framelayout;
-    @Bind(R.id.age_gender)
-    TextView ageGender;
+    private static final int MSG_CHANGE_GEO = 0;
+    private static final int MSG_CREATE_GEO = 1;
+    @Bind(R.id.mMapView)
+    MapView mMapView;
+    private BaiduMap mBaiduMap = null;
 
-    private String aroundID;
-    private UserBean user;
-    private Bitmap mPhotoImage;
-    private Paint mPaint;
+    private LatLng pt;//所在经纬
+    private String city;//所在城市
+    private int cityCode;//所在城市代码
 
-    private String address;
-    private static final int CODE_CAMERA = 1;
-    private static final int CODE_QUERY = 0;
-    private static final int MSG_LIKE = 3;
+    private Location location;
+    private MyOrientationListener myOrientationListener;
+    private LinkedList<LocationEntity> locationList = new LinkedList<LocationEntity>(); // 存放历史定位结果的链表，最大存放当前结果的前5次定位结果
+    private List<LatLng> historyList = new ArrayList<>();//记录轨迹
+    private boolean isFirstIn = true;
 
-    private Handler handler = new Handler() {
+    private float orientationX;//旋转方向
+
+    private String otherID = null;
+
+    @OnClick(R.id.stop)
+    public void onClick() {
+    }
+
+    /**
+     * 封装定位结果和时间的实体类
+     */
+    class LocationEntity {
+        BDLocation location;
+        long time;
+    }
+
+    private BDLocationListener mListener = new BDLocationListener() {
         @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == CODE_QUERY) {
-                Bundle bundle = getIntent().getBundleExtra("com.example.lenovo.murphysl");
-                aroundID = bundle.getString("ID");
-                log("aroundID" + aroundID);
-
-                BmobQuery<UserBean> query = new BmobQuery<>();
-                query.getObject(DateActivity.this, aroundID, new GetListener<UserBean>() {
-                    @Override
-                    public void onSuccess(UserBean userBean) {
-                        user = userBean;
-                        log("附近的人失败");
-                    }
-
-                    @Override
-                    public void onFailure(int i, String s) {
-                        log("附近的人失败");
-                    }
-                });
-            }else if(msg.what == MSG_LIKE){
-
+        public void onReceiveLocation(BDLocation bdLocation) {
+            if (bdLocation != null) {
+                Algorithm(bdLocation);
             }
-
         }
     };
 
-
     @Override
     protected String title() {
-        return "开始聚会";
+        return "遇见";
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_date);
         ButterKnife.bind(this);
+        initLocation();
+        otherID = getIntent().getBundleExtra("com.example.lenovo.murphysl").getString("ID");
+        initMyLine();
+        initOtherLine();
 
-        address = Environment.getExternalStorageDirectory().getPath() +
-                "/" + new Date(System.currentTimeMillis()).getTime() + ".png";
-
-        Message message = new Message();
-        message.what = CODE_QUERY;
-        handler.sendMessage(message);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    private void initOtherLine() {
+        MoveLine ml = new MoveLine();
+        BmobQuery<MoveLine> q = new BmobQuery<>();
+        q.addWhereEqualTo("user" , otherID);
+        q.findObjects(DateActivity.this, new FindListener<MoveLine>() {
+            @Override
+            public void onSuccess(List<MoveLine> list) {
+                if(list.size() == 0){
+                    toast("对方还未开启路径分享功能");
+                }else{
+                    log(list.size() + "");
+                    otherID = list.get(0).getObjectId();
+                }
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                toast("初始化对方路线错误");
+            }
+        });
+    }
+
+    private void initMyLine() {
+        handler.postDelayed(runnable , 5000);
+        BmobQuery<MoveLine> q = new BmobQuery<>();
+        q.addWhereEqualTo("user" , UserModel.getInstance().getUser());
+        q.findObjects(DateActivity.this, new FindListener<MoveLine>() {
+            @Override
+            public void onSuccess(List<MoveLine> list) {
+                if(list.size() != 0){
+                    MoveLine ml = list.get(0);
+                    String mlID = ml.getObjectId();
+                    ml.delete(DateActivity.this, mlID, new DeleteListener() {
+                        @Override
+                        public void onSuccess() {
+                            log("清理上次完毕");
+                            Message msg = new Message();
+                            msg.what = MSG_CREATE_GEO;
+                            handler.sendMessage(msg);
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("清理上次失败");
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+        });
+    }
+
+
+    private void initLocation() {
+        location = MyApplication.getINSTANCE().location;
+        location.registerLocListener(mListener);
+
+        mBaiduMap = mMapView.getMap();
+        //设置初始视距
+        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(15.0f);
+        mBaiduMap.setMapStatus(msu);
+        mBaiduMap.setMyLocationEnabled(true);
+
+        myOrientationListener = new MyOrientationListener(this);
+        myOrientationListener.setOnOrientationListener(new MyOrientationListener.OnOrientationListener() {
+            @Override
+            public void onOrientationChanged(float x) {
+                orientationX = x;
+            }
+        });
+    }
+
+    /**
+     * 平滑策略代码实现方法，主要通过对新定位和历史定位结果进行速度评分，
+     * 来判断新定位结果的抖动幅度，如果超过经验值，则判定为过大抖动，进行平滑处理,若速度过快，
+     * 则推测有可能是由于运动速度本身造成的，则不进行低速平滑处理
+     *
+     * @param bdLocation
+     */
+    private void Algorithm(BDLocation bdLocation) {
+
+        if (locationList.isEmpty() || locationList.size() < 2) {
+            LocationEntity temp = new LocationEntity();
+            temp.location = bdLocation;
+            temp.time = System.currentTimeMillis();
+            locationList.add(temp);
+        } else {
+            if (locationList.size() > 5)
+                locationList.removeFirst();
+            double score = 0;
+            for (int i = 0; i < locationList.size(); ++i) {
+                LatLng lastPoint = new LatLng(locationList.get(i).location.getLatitude(), locationList.get(i).location.getLongitude());
+                LatLng curPoint = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
+                double distance = DistanceUtil.getDistance(lastPoint, curPoint);
+                double curSpeed = distance / (System.currentTimeMillis() - locationList.get(i).time) / 1000;
+                score += curSpeed * LocConfig.EARTH_WEIGHT[i];
+            }
+            if (score > 0.00000999 && score < 0.00005) { // 经验值
+                bdLocation.setLongitude(
+                        (locationList.get(locationList.size() - 1).location.getLongitude() + bdLocation.getLongitude())
+                                / 2);
+                bdLocation.setLatitude(
+                        (locationList.get(locationList.size() - 1).location.getLatitude() + bdLocation.getLatitude())
+                                / 2);
+            }
+            LocationEntity newLocation = new LocationEntity();
+            newLocation.location = bdLocation;
+            newLocation.time = System.currentTimeMillis();
+            locationList.add(newLocation);
+        }
+        EventBus.getDefault().post(new LocationEvent(bdLocation));
+    }
+
+    /**
+     * 当前位置
+     */
+    private void myLoction(LatLng latLng) {
+        MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);
+        mBaiduMap.animateMapStatus(msu);//设置动画
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEventLoc(LocationEvent event) {
+        BDLocation location = event.getLocData();
+        //存储位置
+        LocationEntity temp = new LocationEntity();
+        temp.location = location;
+        temp.time = System.currentTimeMillis();
+        historyList.add(new LatLng(location.getLatitude() , location.getLongitude()));
+        log(location.getLatitude() + "\\/" + location.getLongitude() + "");
+
+        if (location != null) {
+            MyLocationData data = new MyLocationData.Builder()
+                    .direction(orientationX)//定位数据方向
+                    .accuracy(location.getRadius())//定位数据精度信息
+                    .latitude(location.getLatitude())//定位数据的纬度
+                    .longitude(location.getLongitude())//定位数据的经度
+                    .build();//生成定位数据对象
+            mBaiduMap.setMyLocationData(data);
+
+            BitmapDescriptor mIconLocation = BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked);
+            MyLocationConfiguration config = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, mIconLocation);
+            mBaiduMap.setMyLocationConfigeration(config);
+
+            //更新经纬度
+            pt = new LatLng(location.getLatitude(), location.getLongitude());
+            city = location.getCity();
+            cityCode = Integer.parseInt(String.valueOf(location.getCityCode()));
+
+            if (isFirstIn) {
+                myLoction(pt);
+                isFirstIn = false;
+            }
+        }
+    }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-    }
-
-    @OnClick(R.id.start_photo)
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.start_photo:
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                Uri uri = Uri.fromFile(new File(address));
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                startActivityForResult(intent, CODE_CAMERA);
-                break;
-        }
+        location.start();
+        myOrientationListener.start();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        log(1 + "");
-        //dateProgress.setVisibility(View.VISIBLE);
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == CODE_CAMERA) {
-                final BmobFile bmobFile = new BmobFile(new File(address));
-
-                mPhotoImage = BitmapFactory.decodeFile(address);
-                iv.setImageBitmap(mPhotoImage);
-                Message msg = new Message();
-                //msg.what = CODE_IDENTIFY;
-                handler.sendMessage(msg);
-
-                bmobFile.upload(this, new UploadFileListener() {
-                    @Override
-                    public void onSuccess() {
-                        log("success");
-                        MyDate datePhoto = new MyDate();
-                        datePhoto.setPhoto(bmobFile);
-                        datePhoto.setUser(BmobUser.getCurrentUser(DateActivity.this, UserBean.class));
-                        datePhoto.setFriend(user);
-                        datePhoto.save(DateActivity.this, new SaveListener() {
-                            @Override
-                            public void onSuccess() {
-                                toast("上传照片成功");
-                                //dateProgress.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onFailure(int i, String s) {
-                                toast("上传照片失败");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onProgress(Integer value) {
-                        super.onProgress(value);
-                        //dateProgress.setProgress(value);
-                    }
-
-                    @Override
-                    public void onFailure(int i, String s) {
-
-                    }
-                });
-
-            }
-        }
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
     }
 
-    *
-     * 解析数据
-     *
-     * @param rs
-     * @param gender
-
-    private void prepareRsBitmap(JSONObject rs, String gender) {
-
-        Bitmap bitmap = Bitmap.createBitmap(mPhotoImage.getWidth(), mPhotoImage.getHeight(), mPhotoImage.getConfig());
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(mPhotoImage, 0, 0, null);
-
-        try {
-            JSONObject faceInfo = rs.getJSONObject("face");
-            JSONObject posObj = faceInfo.getJSONObject("position");
-            JSONArray cans = faceInfo.getJSONArray("candidate");
-            Double temp = 0.0;
-            int pos = 0;
-            for (int t = 0; t < cans.length(); t++) {
-                JSONObject can = cans.getJSONObject(t);
-                Double c = can.getDouble("confidence");
-                if (c > temp) {
-                    temp = c;
-                    pos = t;
-                }
-            }
-
-            String name = cans.getJSONObject(pos).getString("person_name");
-
-            float x = (float) posObj.getJSONObject("center").getDouble("x");
-            float y = (float) posObj.getJSONObject("center").getDouble("y");
-
-            float w = (float) posObj.getDouble("width");
-            float h = (float) posObj.getDouble("height");
-
-            //百分比转为像素值
-            x = x / 100 * bitmap.getWidth();
-            y = y / 100 * bitmap.getHeight();
-
-            w = w / 100 * bitmap.getWidth();
-            h = h / 100 * bitmap.getHeight();
-
-            mPaint = new Paint();
-            mPaint.setColor(0xffffffff);
-            mPaint.setStrokeWidth(3);
-
-            //画BOX
-            canvas.drawLine(x - w / 2, y - h / 2, x - w / 2, y + h / 2, mPaint);
-            canvas.drawLine(x - w / 2, y - h / 2, x + w / 2, y - h / 2, mPaint);
-            canvas.drawLine(x + w / 2, y - h / 2, x + w / 2, y + h / 2, mPaint);
-            canvas.drawLine(x - w / 2, y + h / 2, x + w / 2, y + h / 2, mPaint);
-
-            Bitmap ageBitmap = buildNameBitmap(name, "Male".equals(gender));
-
-            //缩放
-            int ageWidth = ageBitmap.getWidth();
-            int ageHeight = ageBitmap.getHeight();
-            if (bitmap.getWidth() < iv.getWidth() && bitmap.getHeight() < iv.getHeight()) {
-                float ratio = Math.max(bitmap.getWidth() * 1.0f / iv.getWidth(), bitmap.getHeight() * 1.0f / iv.getHeight());
-                ageBitmap = Bitmap.createScaledBitmap(ageBitmap, (int) (ageWidth * ratio), (int) (ageHeight * ratio), false);
-
-            }
-            canvas.drawBitmap(ageBitmap, x - ageBitmap.getWidth() / 2, y - h / 2 - ageBitmap.getHeight(), null);
-            mPhotoImage = bitmap;
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
     }
 
-    private Bitmap buildNameBitmap(String name, boolean isMale) {
-
-        TextView tv = (TextView) framelayout.findViewById(R.id.age_gender);
-        ageGender.setText(name);
-        if (isMale) {
-            ageGender.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.male), null, null, null);
-        } else {
-            ageGender.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.female), null, null, null);
-        }
-        ageGender.setDrawingCacheEnabled(true);
-        Bitmap bitmap = Bitmap.createBitmap(ageGender.getDrawingCache());
-        ageGender.destroyDrawingCache();
-        return bitmap;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        log("onStop");
+        myOrientationListener.stop();
     }
 
+    @Override
+    protected void onDestroy() {
+        log("onDestory");
+        mMapView.onDestroy();
+        mBaiduMap.setMyLocationEnabled(false);
+        location.unregisterLocListener(mListener);
+        location.stop();
+        super.onDestroy();
+    }
 
-    @OnClick(R.id.look_photo)
-    public void onClickLookPhoto() {
-        final String add = Environment.getExternalStorageDirectory().getPath() + "/" + "1" + ".png";
-        BmobQuery<MyDate> query = new BmobQuery<MyDate>();
-        MyDate date = new MyDate();
-        date.setUser(BmobUser.getCurrentUser(DateActivity.this, UserBean.class));
-        query.order("-createdAt");
-        query.addWhereEqualTo("user", BmobUser.getCurrentUser(DateActivity.this, UserBean.class));
-        query.findObjects(DateActivity.this, new FindListener<MyDate>() {
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
-            @Override
-            public void onSuccess(List<MyDate> list) {
-                log("url" + list.get(0).getPhoto().getFileUrl(DateActivity.this));
-                BmobFile bmobFile = new BmobFile(add, "", list.get(0).getPhoto().getFileUrl(DateActivity.this));
-                bmobFile.download(DateActivity.this, new DownloadFileListener() {
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
-                    @Override
-                    public void onStart() {
-                        super.onStart();
-                        toast("开始加载");
-                    }
-
-                    @Override
-                    public void onSuccess(String s) {
-                        log("加载成功");
-                        log(add);
-                        Bitmap bt = BitmapFactory.decodeFile(add);
-                        if (bt != null) {
-                            iv.setImageBitmap(BitmapFactory.decodeFile(add));
-                        } else {
-                            log("图片为空" + s);
-
-                            iv.setImageBitmap(BitmapFactory.decodeFile(s));
+    private String lineID;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case MSG_CHANGE_GEO:
+                    MoveLine ml = new MoveLine();
+                    ml.setList(geoList);
+                    ml.update(DateActivity.this,lineID , new UpdateListener() {
+                        @Override
+                        public void onSuccess() {
+                            log("上传成功");
                         }
-                    }
 
-                    @Override
-                    public void onFailure(int i, String s) {
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("上传失败" + s);
+                        }
+                    });
+                    break;
+                case MSG_CREATE_GEO:
+                    final MoveLine m = new MoveLine();
+                    m.setUser(UserModel.getInstance().getUser());
+                    m.setList(geoList);
+                    m.save(DateActivity.this, new SaveListener() {
+                        @Override
+                        public void onSuccess() {
+                            log("上传成功");
+                            lineID = m.getObjectId();
+                        }
 
-                    }
-                });
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("上传失败" + s);
+                        }
+                    });
+                    break;
             }
+        }
+    };
 
-            @Override
-            public void onError(int arg0, String arg1) {
-                // TODO 自动生成的方法存根
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            drawLine(historyList);
+            handler.postDelayed(runnable , 5000);
+        }
+    };
 
-            }
-        });
-
-
-    }
-
-
-    @OnClick(R.id.like)
-    public void onClick() {
+    private List<BmobGeoPoint> geoList = new ArrayList<>();
+    private void drawLine(List<LatLng> list){
+        Iterator<LatLng> i = list.iterator();
+        while (i.hasNext()){
+            LatLng latLng  = i.next();
+            Double latitude = latLng.latitude;
+            Double longitude = latLng.longitude;
+            BmobGeoPoint geo = new BmobGeoPoint(longitude , latitude);
+            geoList.add(geo);
+        }
         Message msg = new Message();
-        msg.what = MSG_LIKE;
+        msg.what = MSG_CHANGE_GEO;
         handler.sendMessage(msg);
+
+        //另一个人的路径
+        if(otherID != null || !otherID.equals("")){
+            log("otherID" + otherID);
+            BmobQuery<List> q = new BmobQuery<>();//?List<BmobGeoPoint>
+            q.getObject(DateActivity.this, null , new GetListener<List>() {
+                @Override
+                public void onSuccess(List bmobGeoPoints) {
+                    Iterator i = bmobGeoPoints.iterator();
+                    List<LatLng> ll = new ArrayList<LatLng>();
+                    while(i.hasNext()){
+                        BmobGeoPoint b = (BmobGeoPoint) i.next();
+                        Double la = b.getLatitude();
+                        Double lo = b.getLongitude();
+                        LatLng l = new LatLng(la , lo);
+                        ll.add(l);
+                    }
+                    log("draw");
+                    BitmapDescriptor custom1 = BitmapDescriptorFactory
+                            .fromResource(R.drawable.low_poly_texture);
+
+                    OverlayOptions polygonOption = new PolylineOptions()
+                            .points(ll)
+                            .width(50)
+                            .color(0xAAFF0000)
+                            .customTexture(custom1);
+                    mBaiduMap.addOverlay(polygonOption);
+                }
+
+                @Override
+                public void onFailure(int i, String s) {
+
+                }
+            });
+        }
+
+        log("draw");
+        BitmapDescriptor custom1 = BitmapDescriptorFactory
+                .fromResource(R.drawable.low_poly_texture);
+
+        if(list.size() > 2){
+            OverlayOptions polygonOption = new PolylineOptions()
+                    .points(list)
+                    .width(15)
+                    .color(0xAAFF0000)
+                    .customTexture(custom1);
+            mBaiduMap.addOverlay(polygonOption);
+        }
+
     }
 }
-*/

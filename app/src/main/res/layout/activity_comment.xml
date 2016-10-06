@@ -63,9 +63,9 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:hint="来评论一句吧"
-				android:background="@drawable/selector_edittext_account"
 				android:ems="10"
 				android:minHeight="40dp"
+				android:background="@drawable/selector_edittext_account"
 				android:layout_marginRight="4dip"
 				android:layout_marginLeft="4dp"
 				android:paddingLeft="4dip">
@@ -87,7 +87,7 @@
 				android:padding="8dp"
 				android:layout_marginLeft="8dp"
 				android:layout_marginRight="8dp"
-				android:background="@drawable/selector_logout"/>
+				android:background="@drawable/selector_click"/>
 		</LinearLayout>
 	</RelativeLayout>
 

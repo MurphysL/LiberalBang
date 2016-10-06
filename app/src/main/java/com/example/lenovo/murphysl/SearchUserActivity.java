@@ -1,12 +1,14 @@
 package com.example.lenovo.murphysl;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.example.lenovo.murphysl.bean.UserBean;
@@ -15,6 +17,7 @@ import com.example.lenovo.murphysl.adapter.SearchUserAdapter;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.model.BaseModel;
 import com.example.lenovo.murphysl.model.UserModel;
+import com.example.lenovo.murphysl.view.UserInfoActivity;
 
 import java.util.List;
 
@@ -51,6 +54,17 @@ public class SearchUserActivity extends ParentWithNaviActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_user);
         initNaviView();
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         adapter =new SearchUserAdapter();
         layoutManager = new LinearLayoutManager(this);
         rc_view.setLayoutManager(layoutManager);

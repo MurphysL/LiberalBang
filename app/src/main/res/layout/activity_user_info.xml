@@ -40,7 +40,7 @@
                 android:layout_marginTop="@dimen/margin_12"
                 android:layout_marginBottom="@dimen/margin_12"
                 android:layout_marginLeft="@dimen/margin_16"
-                android:src="@mipmap/fortress" />
+                android:src="@mipmap/niyou" />
         </LinearLayout>
 
     </RelativeLayout>
@@ -60,7 +60,53 @@
 
         <TextView
             android:id="@+id/tv_name"
+            android:text="MurphySL"
             style="@style/style_text_black"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:drawablePadding="10dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_hobby"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/about_mid_bg"
+        android:padding="10dp" >
+
+        <TextView
+            style="@style/style_text_black"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/add_hobby" />
+
+        <TextView
+            android:id="@+id/tv_hobby"
+            style="@style/style_text_black"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:drawablePadding="10dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_identify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/about_mid_bg"
+        android:padding="10dp" >
+
+        <TextView
+            style="@style/style_text_black"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/add_identify" />
+
+        <TextView
+            android:id="@+id/tv_identify"
+            style="@style/style_text_black"
+            android:text="未认证"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"

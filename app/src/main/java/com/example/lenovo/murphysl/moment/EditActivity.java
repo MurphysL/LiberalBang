@@ -6,11 +6,14 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,6 +31,8 @@ import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.model.UserModel;
 import com.example.lenovo.murphysl.util.ActivityUtil;
 import com.example.lenovo.murphysl.util.CacheUtils;
+import com.example.lenovo.murphysl.util.StringUtils;
+import com.example.lenovo.murphysl.view.UserHobbyActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,12 +65,12 @@ public class EditActivity extends ParentWithNaviActivity {
     LinearLayout takeLayout;
     @Bind(R.id.open_layout)
     LinearLayout openLayout;
-    @Bind(R.id.open_pic)
-    ImageView albumPic;
     @Bind(R.id.take_pic)
     ImageView takePic;
     @Bind(R.id.commit_edit)
     Button commitEdit;
+    @Bind(R.id.et_money)
+    EditText etMoney;
 
     private static final int REQUEST_CODE_ALBUM = 1;
     private static final int REQUEST_CODE_CAMERA = 2;
@@ -82,7 +87,7 @@ public class EditActivity extends ParentWithNaviActivity {
         public void onReceiveLocation(BDLocation bdLocation) {
             if (bdLocation != null) {
                 geo = bdLocation.getAddrStr();
-                loc = new BmobGeoPoint(bdLocation.getLongitude() , bdLocation.getLatitude());
+                loc = new BmobGeoPoint(bdLocation.getLongitude(), bdLocation.getLatitude());
             }
         }
     };
@@ -93,7 +98,23 @@ public class EditActivity extends ParentWithNaviActivity {
         setContentView(R.layout.activity_edit);
         initNaviView();
         ButterKnife.bind(this);
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         initGeo();
+    }
+
+    private void initGeo() {
+        location = MyApplication.getINSTANCE().location;
+        location.registerLocListener(mListener);
     }
 
     @Override
@@ -109,12 +130,8 @@ public class EditActivity extends ParentWithNaviActivity {
         super.onDestroy();
     }
 
-    private void initGeo() {
-        location = MyApplication.getINSTANCE().location;
-        location.registerLocListener(mListener);
-    }
 
-    /*
+    /**
      * 发表带图片
      */
     private void publish(final String commitContent) {
@@ -139,14 +156,48 @@ public class EditActivity extends ParentWithNaviActivity {
     }
 
     private void publishWithoutFigure(final String commitContent, final BmobFile figureFile) {
+        String[] keyWords = {
+                this.getResources().getString(R.string.ac_eat_chinese),
+                this.getResources().getString(R.string.ac_eat_buffet_dinner),
+                this.getResources().getString(R.string.ac_eat_fast),
+                this.getResources().getString(R.string.ac_eat_snack),
+                this.getResources().getString(R.string.ac_eat_west),
+
+                this.getResources().getString(R.string.ac_bar),
+                this.getResources().getString(R.string.ac_entertainment),
+                this.getResources().getString(R.string.ac_gym),
+                this.getResources().getString(R.string.ac_internet),
+                this.getResources().getString(R.string.ac_movie),
+
+                this.getResources().getString(R.string.ac_tour_amusement),
+                this.getResources().getString(R.string.ac_tour_museum),
+                this.getResources().getString(R.string.ac_tour_park),
+                this.getResources().getString(R.string.ac_tour_zoo),
+                this.getResources().getString(R.string.ac_tour_view),
+
+                this.getResources().getString(R.string.ac_play_badminton),
+                this.getResources().getString(R.string.ac_play_ball),
+                this.getResources().getString(R.string.ac_play_basketball),
+                this.getResources().getString(R.string.ac_play_football),
+                this.getResources().getString(R.string.ac_play_volleyball)};
 
         final QiangYu qiangYu = new QiangYu();
         qiangYu.setAuthor(user);
         qiangYu.setContent(commitContent);
+        qiangYu.setKeyWord(StringUtils.keyWord(commitContent, keyWords));
+
         if (figureFile != null) {
             qiangYu.setContentfigureurl(figureFile);
         }
+        qiangYu.setState(0);
         qiangYu.setLove(0);
+        log(etMoney.getText().toString());
+        if(etMoney.getText().toString() != "0"){
+            qiangYu.setMoney(Integer.parseInt(etMoney.getText().toString()));
+        }else{
+            qiangYu.setMoney(0);
+        }
+
         qiangYu.setComment(0);
         qiangYu.setPass(true);
         qiangYu.setGeo(geo);
@@ -218,7 +269,7 @@ public class EditActivity extends ParentWithNaviActivity {
 
     @Override
     protected String title() {
-        return "发表动态";
+        return "求助";
     }
 
     @OnClick({R.id.open_layout, R.id.take_layout})
@@ -255,7 +306,6 @@ public class EditActivity extends ParentWithNaviActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        log("get album:");
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_ALBUM:
@@ -293,11 +343,18 @@ public class EditActivity extends ParentWithNaviActivity {
             ActivityUtil.show(EditActivity.this, "内容不能为空");
             return;
         }
+        String moneyContent = etMoney.getText().toString().trim();
+        if (TextUtils.isEmpty(commitContent)) {
+            ActivityUtil.show(EditActivity.this, "内容不能为空");
+            return;
+        }
         if (targeturl == null) {
             publishWithoutFigure(commitContent, null);
         } else {
             publish(commitContent);
-            toast("发送成功");
+            finish();
         }
+        toast("发送成功");
     }
+
 }

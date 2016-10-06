@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.R;
-import com.example.lenovo.murphysl.UserInfoActivity;
+import com.example.lenovo.murphysl.view.UserInfoActivity;
 import com.example.lenovo.murphysl.adapter.base.BaseViewHolder;
 import com.example.lenovo.murphysl.base.ImageLoaderFactory;
 

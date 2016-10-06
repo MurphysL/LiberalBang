@@ -14,16 +14,14 @@ public class UserEvent {
     private String userID;
     private String userName;
     private String hobby;
-    private String sort;
-    private Double distance;
+    private int distance;
 
     private UserBean userBean;
 
-    public UserEvent(String userID , String userName , String hobby , String sort , Double distance){
+    public UserEvent(String userID , String userName , String hobby , int distance){
         this.userID = userID;
         this.userName = userName;
         this.hobby = hobby;
-        this.sort = sort;
         this.distance = distance;
     }
 
@@ -55,19 +53,11 @@ public class UserEvent {
         this.hobby = hobby;
     }
 
-    public String getSort() {
-        return sort;
-    }
-
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
-
-    public Double getDistance() {
+    public int getDistance() {
         return distance;
     }
 
-    public void setDistance(Double distance) {
+    public void setDistance(int distance) {
         this.distance = distance;
     }
 

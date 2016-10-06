@@ -13,6 +13,7 @@ public class QiangYu extends BmobObject implements Serializable{
 	
 	private UserBean author;
 	private String content;
+	private int money;
 	private BmobFile Contentfigureurl;
 	private int love;
 	private int comment;
@@ -21,6 +22,16 @@ public class QiangYu extends BmobObject implements Serializable{
 	private BmobRelation relation;
 	private String geo;
 	private BmobGeoPoint loc;
+
+	private Integer state;//求助状态
+	private UserBean helper;//解决问题的人
+	private MoveLine askLine;//
+	private MoveLine helpLine;
+
+	private BmobFile pic;//合影验证
+
+	private String keyWord;
+
 
 	public BmobRelation getRelation() {
 		return relation;
@@ -82,13 +93,46 @@ public class QiangYu extends BmobObject implements Serializable{
 	public void setLoc(BmobGeoPoint loc) {
 		this.loc = loc;
 	}
-
-	@Override
-	public String toString() {
-		return "QiangYu [author=" + author + ", content=" + content
-				+ ", Contentfigureurl=" + Contentfigureurl + ", love=" + love
-				+ ", comment=" + comment + ", isPass=" + isPass
-				+  ", myLove=" + myLove + ", relation=" + relation + "]";
+	public Integer getState() {
+		return state;
 	}
-	
+	public void setState(Integer state) {
+		this.state = state;
+	}
+	public UserBean getHelper() {
+		return helper;
+	}
+	public void setHelper(UserBean helper) {
+		this.helper = helper;
+	}
+	public MoveLine getAskLine() {
+		return askLine;
+	}
+	public void setAskLine(MoveLine askLine) {
+		this.askLine = askLine;
+	}
+	public MoveLine getHelpLine() {
+		return helpLine;
+	}
+	public void setHelpLine(MoveLine helpLine) {
+		this.helpLine = helpLine;
+	}
+	public BmobFile getPic() {
+		return pic;
+	}
+	public void setPic(BmobFile pic) {
+		this.pic = pic;
+	}
+	public String getKeyWord() {
+		return keyWord;
+	}
+	public void setKeyWord(String keyWord) {
+		this.keyWord = keyWord;
+	}
+	public int getMoney() {
+		return money;
+	}
+	public void setMoney(int money) {
+		this.money = money;
+	}
 }

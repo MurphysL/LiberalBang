@@ -9,7 +9,7 @@
     <include layout="@layout/include_navi"/>
 
     <FrameLayout
-        android:layout_weight="1.0"
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp">
 

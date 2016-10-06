@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.lenovo.murphysl.ui.SplashActivity">
+    tools:context=".view.SplashActivity">
 
     <ImageView
         android:layout_centerInParent="true"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:background="@drawable/splash" />
+        android:background="@drawable/splash1" />
 
 </RelativeLayout>

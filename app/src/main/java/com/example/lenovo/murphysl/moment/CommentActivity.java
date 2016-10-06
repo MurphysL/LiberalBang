@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,7 +26,7 @@ import android.widget.TextView;
 
 import com.example.lenovo.murphysl.MyApplication;
 import com.example.lenovo.murphysl.R;
-import com.example.lenovo.murphysl.UserInfoActivity;
+import com.example.lenovo.murphysl.view.UserInfoActivity;
 import com.example.lenovo.murphysl.adapter.CommentAdapter;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
 import com.example.lenovo.murphysl.bean.Comment;
@@ -92,6 +95,17 @@ public class CommentActivity extends ParentWithNaviActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
         ButterKnife.bind(this);
+        initNaviView();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         qiangYu = (QiangYu) getIntent().getSerializableExtra("data");
         initListView();
         initMoodView(qiangYu);

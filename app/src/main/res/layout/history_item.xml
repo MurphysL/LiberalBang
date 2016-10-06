@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dip"
+        android:background="#FFFFFF"
+        android:descendantFocusability="blocksDescendants"
+        >
+
+        <ImageView
+            android:id="@+id/user_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/niyou"
+            />
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/user_logo"
+            android:text="觅友"
+            android:gravity="center_vertical"
+            android:layout_alignTop="@id/user_logo"
+            android:layout_alignBottom="@id/user_logo"
+            android:layout_marginLeft="8dip"
+            />
+
+        <TextView
+            android:id="@+id/state"
+            android:layout_toLeftOf="@+id/helper"
+            android:gravity="center_vertical"
+            android:text="未开始"
+            android:layout_width="60dp"
+            android:layout_height="40dp" />
+
+        <TextView
+            android:id="@+id/state_text"
+            android:layout_toLeftOf="@+id/state"
+            android:gravity="center_vertical"
+            android:text="状态:"
+            android:layout_width="60dp"
+            android:layout_height="40dp" />
+
+        <ImageView
+            android:id="@+id/helper"
+            android:layout_alignParentRight="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/niyou"
+            />
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_below="@id/state"
+            android:layout_alignParentRight="true"
+            android:text="删除"
+            android:textColor="#FFFFFF"
+            android:layout_margin="4dp"
+            android:background="@drawable/selector_click"
+            android:layout_width="55dp"
+            android:layout_height="40dp" />
+        <Button
+            android:id="@+id/confrim"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            android:layout_below="@id/state"
+            android:layout_toLeftOf="@id/cancel"
+            android:text="确认"
+            android:textColor="#FFFFFF"
+            android:layout_margin="4dp"
+            android:background="@drawable/selector_click"
+            android:layout_width="55dp"
+            android:layout_height="40dp" />
+
+        <TextView
+            android:id="@+id/content_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="内容"
+            android:layout_below="@id/user_logo"
+            android:layout_margin="4dp"
+            />
+        <TextView
+            android:id="@+id/content_money"
+            android:drawableLeft="@drawable/money"
+            android:layout_width="match_parent"
+            android:text="无悬赏"
+            android:numeric="integer"
+            android:layout_below="@id/content_text"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/content_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:src="@drawable/bg_pic_loading"
+            android:layout_below="@id/content_money"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:visibility="visible"
+            android:paddingTop="25dp"
+            android:paddingBottom="8dp"
+            />
+        <TextView
+            android:id="@+id/content_geo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/content_image"
+            android:drawableLeft="@drawable/icon_gcoding"
+            android:gravity="center"
+            android:text="位置"
+            android:textColor="#888888"
+            android:layout_marginTop="25dip"
+            android:layout_marginBottom="4dip"
+            android:layout_marginLeft="8dip"
+            android:layout_marginRight="8dip"
+            />
+        <TextView
+            android:id="@+id/item_action_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/content_geo"
+            android:drawableLeft="@drawable/ic_action_comment"
+            android:gravity="center"
+            android:text="4个评论"
+            android:textColor="#888888"
+            android:layout_marginTop="4dip"
+            android:layout_marginBottom="4dip"
+            android:layout_marginLeft="8dip"
+            android:layout_marginRight="8dip"
+            />
+
+
+        <TextView
+            android:id="@+id/item_action_love"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/content_geo"
+            android:drawableLeft="@drawable/ic_action_love"
+            android:text="666赞"
+            android:textColor="#888888"
+            android:layout_marginTop="4dip"
+            android:layout_marginBottom="4dip"
+            android:layout_marginLeft="8dip"
+            android:layout_marginRight="8dip"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
+
+</LinearLayout>

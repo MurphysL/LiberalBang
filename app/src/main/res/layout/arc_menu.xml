@@ -33,13 +33,13 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/c_l"
+            android:src="@drawable/c_s"
             android:tag="路线规划"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:src="@drawable/c_s"
+            android:src="@drawable/c_l"
             android:tag="地点搜索"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

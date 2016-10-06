@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ordering  动画集合顺序,默认为together-->
+<set
+    android:ordering="sequentially"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- propertyName  动画属性
+         repeatCount   重复次数 默认为 0 无限循环 -1
+         repeatMode    重复方式 restart 正序  reverse 倒序 -->
+    <objectAnimator
+        android:propertyName="translationX"
+        android:duration="1000"
+        android:valueFrom="0.0"
+        android:valueTo="400.0"
+        android:valueType="floatType">
+    </objectAnimator>
+
+    <objectAnimator
+        android:propertyName="backgroundColor"
+        android:duration="1000"
+        android:valueFrom="@color/colorPrimaryDark"
+        android:valueTo="@color/colorAccent"
+        android:repeatCount="-1"
+        android:repeatMode="reverse"
+        android:valueType="colorType">
+    </objectAnimator>
+
+</set>

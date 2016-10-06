@@ -2,14 +2,11 @@ package com.example.lenovo.murphysl;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Service;
 import android.graphics.Bitmap;
-import android.os.Vibrator;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.example.lenovo.murphysl.map.Location;
 import com.example.lenovo.murphysl.base.UniversalImageLoader;
-import com.example.lenovo.murphysl.model.UserModel;
 import com.example.lenovo.murphysl.util.ActivityManagerUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -103,4 +100,5 @@ public class MyApplication extends Application {
     public Activity getTopActivity(){
         return ActivityManagerUtils.getInstance().getTopActivity();
     }
+
 }

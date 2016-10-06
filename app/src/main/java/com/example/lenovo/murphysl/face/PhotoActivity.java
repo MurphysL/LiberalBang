@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,9 +15,12 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.lenovo.murphysl.ImageActivity;
@@ -47,7 +51,6 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
@@ -84,6 +87,12 @@ public class PhotoActivity extends ParentWithNaviActivity {
     private final UserBean user = UserModel.getInstance().getUser();
     @Bind(R.id.share)
     Button share;
+    @Bind(R.id.linear)
+    LinearLayout upload;
+    @Bind(R.id.photo)
+    LinearLayout photo;
+    @Bind(R.id.camera)
+    LinearLayout camera;
 
     private Bitmap mPhotoImage;
     private String s;
@@ -96,34 +105,34 @@ public class PhotoActivity extends ParentWithNaviActivity {
     private List<JSONObject> jsList = new ArrayList<>();
     private List<String> personList = new ArrayList<>();
     private List<String> faceIDList = new ArrayList<>();
-    private Map<String , String > owner = new HashMap<>();
+    private Map<String, String> owner = new HashMap<>();
 
-    private HashMap<String , Integer > pMap = new HashMap<String , Integer>();
-    private HashMap<String , Integer> fMap = new HashMap<String , Integer>();
+    private HashMap<String, Integer> pMap = new HashMap<String, Integer>();
+    private HashMap<String, Integer> fMap = new HashMap<String, Integer>();
     private List<String> nameList = new ArrayList<>();
     private int temp2;
     private int vFace;//人脸计数
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventVetity (final VetityEvent event){
+    public void onEventVetity(final VetityEvent event) {
         final String face = event.getFace();
         final String per = personList.get(pMap.get(face) - 1);
 
-        FacePPDecet.verify(face ,per , new FacePPDecet.CallBack() {
+        FacePPDecet.verify(face, per, new FacePPDecet.CallBack() {
             @Override
             public void success(JSONObject result) {
                 try {
                     if (result.getBoolean("is_same_person")) {
-                        owner.put(face , per);
+                        owner.put(face, per);
                         nameList.add(per);
                         log(face + ": " + "添加" + per + "成功");
                         Message message = new Message();
                         Bundle vb = new Bundle();
-                        vb.putString("Vface" , "fc");
+                        vb.putString("Vface", "fc");
                         message.setData(vb);
                         handler.sendMessage(message);
-                    }else{
+                    } else {
                         log("添加" + per + "失败");
                         Message msg = new Message();
                         msg.what = MSG_VETIFY;
@@ -194,32 +203,32 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     break;
                 case MSG_VETIFY:
                     String face = null;
-                    if("fc".equals(msg.getData().getString("vFace"))){
-                        vFace --;
+                    if ("fc".equals(msg.getData().getString("vFace"))) {
+                        vFace--;
                     }
-                    if(vFace - 1 >= 0){
+                    if (vFace - 1 >= 0) {
                         log("存在未辨识人脸");
                         face = faceIDList.get(vFace - 1);
-                        if("pc".equals(msg.getData().getString("vFace"))){
-                            pMap.put(face , pMap.get(face) - 1);
+                        if ("pc".equals(msg.getData().getString("vFace"))) {
+                            pMap.put(face, pMap.get(face) - 1);
                         }
 
                         int pNum = pMap.get(face);
-                        if(pNum - 1 > 0){
+                        if (pNum - 1 > 0) {
                             log("存在未辨识person" + "pMap" + pMap.get(face) + "vFace" + vFace);
                             EventBus.getDefault().post(
-                                    new VetityEvent(face , personList.get(pNum - 1)));
-                            pMap.put(face , pMap.get(face) - 1);//此人脸对应person减一
+                                    new VetityEvent(face, personList.get(pNum - 1)));
+                            pMap.put(face, pMap.get(face) - 1);//此人脸对应person减一
 
-                        }else{
-                            vFace --;//人脸减一
+                        } else {
+                            vFace--;//人脸减一
                             EventBus.getDefault().post(
-                                    new VetityEvent(faceIDList.get(vFace) , personList.get(pNum - 1)));
+                                    new VetityEvent(faceIDList.get(vFace), personList.get(pNum - 1)));
                         }
-                    }else{
+                    } else {
                         log("循环完毕");
-                        for(int o = 0 ; o < temp2 ;o ++){
-                            prepareRsBitmap(owner.get(faceIDList.get(o)) , jsList.get(o), "Male");
+                        for (int o = 0; o < temp2; o++) {
+                            prepareRsBitmap(owner.get(faceIDList.get(o)), jsList.get(o), "Male");
                         }
                         image.setImageBitmap(mPhotoImage);
                         sendPhoto(nameList);
@@ -228,46 +237,46 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     break;
                 case MSG_IDENTIFY:
                     log("辨识成功");
-                    if(flag){
+                    if (flag) {
                         faceNum = msg.arg1;
                         flag = false;
                     }
-                    if(faceNum == 1){
+                    if (faceNum == 1) {
                         jsList.add((JSONObject) msg.obj);
-                        prepareRsBitmap(null , null, msg.getData().getString("gender"));
+                        prepareRsBitmap(null, null, msg.getData().getString("gender"));
                         image.setImageBitmap(mPhotoImage);
-                    }else{
+                    } else {
                         jsList.add((JSONObject) msg.obj);
-                        faceNum --;
+                        faceNum--;
                     }
                     break;
                 case MSG_UPLOAD_PHOTO:
-                    final BmobFile file = new BmobFile(new File(s));
-                    file.upload(PhotoActivity.this, new UploadFileListener() {
-                        @Override
-                        public void onSuccess() {
-                            user.setPic(file);
-                            user.update(PhotoActivity.this, new UpdateListener() {
-                                @Override
-                                public void onSuccess() {
-                                    url = file.getFileUrl(PhotoActivity.this);
-                                    toast("原图已上传至云端");
-                                    log("原图上传成功 URL" + url);
-                                }
-
-                                @Override
-                                public void onFailure(int i, String s) {
-                                    log("图片上传失败" + s);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(int i, String s) {
-                            log("头像上传错误" + s);
-                        }
-                    });
-                    break;
+//                    final BmobFile file = new BmobFile(new File(s));
+//                    file.upload(PhotoActivity.this, new UploadFileListener() {
+//                        @Override
+//                        public void onSuccess() {
+//                            user.setPic(file);
+//                            user.update(PhotoActivity.this, new UpdateListener() {
+//                                @Override
+//                                public void onSuccess() {
+//                                    url = file.getFileUrl(PhotoActivity.this);
+//                                    toast("原图已上传至云端");
+//                                    log("原图上传成功 URL" + url);
+//                                }
+//
+//                                @Override
+//                                public void onFailure(int i, String s) {
+//                                    log("图片上传失败" + s);
+//                                }
+//                            });
+//                        }
+//
+//                        @Override
+//                        public void onFailure(int i, String s) {
+//                            log("头像上传错误" + s);
+//                        }
+//                    });
+//                    break;
                 case MSG_SUCCESS:
                     JSONObject rs = (JSONObject) msg.obj;
                     log("辨识人脸成功");
@@ -289,7 +298,8 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     FacePPDecet.verifyTrain(UserModel.getInstance().getUser().getUsername(), new FacePPDecet.CallBack() {
                         @Override
                         public void success(JSONObject result) {
-                            log("训练完成");
+                            toast("verifyTrain完成");
+                            log("verifyTrain完成");
                         }
 
                         @Override
@@ -300,28 +310,28 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     break;
                 case MSG_PERSON_LIST:
                     FacePPDecet.personList(new FacePPDecet.CallBack() {
-                    @Override
-                    public void success(JSONObject result) {
-                        try {
-                            JSONArray persons = result.getJSONArray("person");
-                            for(int i = 0 ; i < persons.length() ; i ++ ){
-                                JSONObject person = persons.getJSONObject(i);
-                                String personID = person.getString("person_name");
-                                personList.add(personID);
+                        @Override
+                        public void success(JSONObject result) {
+                            try {
+                                JSONArray persons = result.getJSONArray("person");
+                                for (int i = 0; i < persons.length(); i++) {
+                                    JSONObject person = persons.getJSONObject(i);
+                                    String personID = person.getString("person_name");
+                                    personList.add(personID);
+                                }
+                                log("拉取personList成功：" + personList.size());
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            log("拉取personList成功：" + personList.size());
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                    @Override
-                    public void error(FaceppParseException e) {
-                        toast("拉取person失败");
-                    }
-                });
-                break;
+                        @Override
+                        public void error(FaceppParseException e) {
+                            toast("拉取person失败");
+                        }
+                    });
+                    break;
                 case MSG_ADD_FACE:
                     try {
                         JSONObject rs2 = (JSONObject) msg.obj;
@@ -336,7 +346,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
                             FacePPDecet.addFace(name, rs2, new FacePPDecet.CallBack() {
                                 @Override
                                 public void success(JSONObject result) {
-                                    log("face name : 添加Face成功" );
+                                    log("face name : 添加Face成功");
                                     Message msg3 = new Message();
                                     msg3.what = MSG_TRAIN;
                                     handler.sendMessage(msg3);
@@ -362,12 +372,12 @@ public class PhotoActivity extends ParentWithNaviActivity {
     private void sendPhoto(List<String> nameList) {
         Iterator<String> i = nameList.iterator();
         log("sendPhoto" + nameList.size());
-        while(i.hasNext()){
+        while (i.hasNext()) {
             String name = i.next();
             Message msg = new Message();
             msg.what = MSG_QUERY;
             Bundle b = new Bundle();
-            b.putString("nameL" , name);
+            b.putString("nameL", name);
             msg.setData(b);
             log("name" + name);
             handler.sendMessage(msg);
@@ -384,11 +394,21 @@ public class PhotoActivity extends ParentWithNaviActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Message msg = new Message();
         msg.what = MSG_PERSON_LIST;
         handler.sendMessage(msg);
     }
-
 
     /**
      * 解析数据
@@ -397,7 +417,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
      * @param rs
      * @param gender
      */
-    private void prepareRsBitmap(String name ,JSONObject rs, String gender) {
+    private void prepareRsBitmap(String name, JSONObject rs, String gender) {
         //将原图绘制在Bitmap上
         Bitmap bitmap = Bitmap.createBitmap(mPhotoImage.getWidth(), mPhotoImage.getHeight(), mPhotoImage.getConfig());
         log("width" + mPhotoImage.getWidth() + "height" + mPhotoImage.getHeight());
@@ -410,10 +430,10 @@ public class PhotoActivity extends ParentWithNaviActivity {
                 toast("不存在已登记人脸");
             } else {*/
 
-                JSONObject face = rs;
-                log(face.toString());
-                //JSONArray candidate = face.getJSONArray("candidate");
-                JSONObject posObj = face.getJSONObject("position");//人脸位置
+            JSONObject face = rs;
+            log(face.toString());
+            //JSONArray candidate = face.getJSONArray("candidate");
+            JSONObject posObj = face.getJSONObject("position");//人脸位置
                /* Double temp = 0.0;
                 int pos = 0;
                 for (int i = 0; i < candidate.length(); i++) {
@@ -425,44 +445,44 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     }
                 }*/
 
-                float x = (float) posObj.getJSONObject("center").getDouble("x");
-                float y = (float) posObj.getJSONObject("center").getDouble("y");
+            float x = (float) posObj.getJSONObject("center").getDouble("x");
+            float y = (float) posObj.getJSONObject("center").getDouble("y");
 
-                float w = (float) posObj.getDouble("width");
-                float h = (float) posObj.getDouble("height");
+            float w = (float) posObj.getDouble("width");
+            float h = (float) posObj.getDouble("height");
 
-                //百分比转为像素值
-                x = x / 100 * bitmap.getWidth();
-                y = y / 100 * bitmap.getHeight();
+            //百分比转为像素值
+            x = x / 100 * bitmap.getWidth();
+            y = y / 100 * bitmap.getHeight();
 
-                w = w / 100 * bitmap.getWidth();
-                h = h / 100 * bitmap.getHeight();
+            w = w / 100 * bitmap.getWidth();
+            h = h / 100 * bitmap.getHeight();
 
-                log("x:" + x + " \ny:" + y + "\nw" + w + "\nh" + h);
+            log("x:" + x + " \ny:" + y + "\nw" + w + "\nh" + h);
 
-                Paint mPaint = new Paint();
-                mPaint.setColor(Color.GREEN);
-                mPaint.setStrokeWidth(5);
+            Paint mPaint = new Paint();
+            mPaint.setColor(Color.GREEN);
+            mPaint.setStrokeWidth(5);
 
-                //画BOX
-                canvas.drawLine(x - w / 2, y - h / 2, x - w / 2, y + h / 2, mPaint);
-                canvas.drawLine(x - w / 2, y - h / 2, x + w / 2, y - h / 2, mPaint);
-                canvas.drawLine(x + w / 2, y - h / 2, x + w / 2, y + h / 2, mPaint);
-                canvas.drawLine(x - w / 2, y + h / 2, x + w / 2, y + h / 2, mPaint);
+            //画BOX
+            canvas.drawLine(x - w / 2, y - h / 2, x - w / 2, y + h / 2, mPaint);
+            canvas.drawLine(x - w / 2, y - h / 2, x + w / 2, y - h / 2, mPaint);
+            canvas.drawLine(x + w / 2, y - h / 2, x + w / 2, y + h / 2, mPaint);
+            canvas.drawLine(x - w / 2, y + h / 2, x + w / 2, y + h / 2, mPaint);
 
-                Bitmap ageBitmap = buildNameBitmap(name, "Male".equals(gender));
+            Bitmap ageBitmap = buildNameBitmap(name, "Male".equals(gender));
 
-                //缩放
-                int ageWidth = ageBitmap.getWidth();
-                int ageHeight = ageBitmap.getHeight();
-                if (bitmap.getWidth() < image.getWidth() && bitmap.getHeight() < image.getHeight()) {
-                    float ratio = Math.max(bitmap.getWidth() * 1.0f / image.getWidth(), bitmap.getHeight() * 1.0f / image.getHeight());
-                    ageBitmap = Bitmap.createScaledBitmap(ageBitmap, (int) (ageWidth * ratio), (int) (ageHeight * ratio), false);
+            //缩放
+            int ageWidth = ageBitmap.getWidth();
+            int ageHeight = ageBitmap.getHeight();
+            if (bitmap.getWidth() < image.getWidth() && bitmap.getHeight() < image.getHeight()) {
+                float ratio = Math.max(bitmap.getWidth() * 1.0f / image.getWidth(), bitmap.getHeight() * 1.0f / image.getHeight());
+                ageBitmap = Bitmap.createScaledBitmap(ageBitmap, (int) (ageWidth * ratio), (int) (ageHeight * ratio), false);
 
-                }
-                canvas.drawBitmap(ageBitmap, x - ageBitmap.getWidth() / 2, y - h / 2 - ageBitmap.getHeight(), null);
-           // }
-        }catch (JSONException e) {
+            }
+            canvas.drawBitmap(ageBitmap, x - ageBitmap.getWidth() / 2, y - h / 2 - ageBitmap.getHeight(), null);
+            // }
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -492,7 +512,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
         switch (view.getId()) {
             case R.id.share:
                 share.setVisibility(View.VISIBLE);
-
+                toast("已发送");
                 break;
             case R.id.camera:
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -504,6 +524,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
                 startActivityForResult(new Intent(PhotoActivity.this, ImageActivity.class), CODE_PHOTO);
                 break;
             case R.id.upload:
+                log("upload");
                 FacePPDecet.decet(url, new FacePPDecet.CallBack() {
                     @Override
                     public void success(JSONObject result) {
@@ -513,7 +534,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
                             log("faceCount:" + faceCount);
                             if (faceCount == 0) {
                                 toast("未识别出人脸");
-                            }else{
+                            } else {
                                 for (int i = 0; i < faceCount; i++) {
                                     //得到单独face对象
                                     JSONObject face = faces.getJSONObject(i);
@@ -524,11 +545,11 @@ public class PhotoActivity extends ParentWithNaviActivity {
                                     faceIDList.add(faceId);
                                 }
 
-                                for(int p = 0 ; p < faceIDList.size() ;p ++){
+                                for (int p = 0; p < faceIDList.size(); p++) {
                                     Integer i = new Integer(personList.size());
-                                    pMap.put(faceIDList.get(p) , i);
-                                    log("face：" +faceIDList.get(p));
-                                    fMap.put(faceIDList.get(p) , faceIDList.size());
+                                    pMap.put(faceIDList.get(p), i);
+                                    log("face：" + faceIDList.get(p));
+                                    fMap.put(faceIDList.get(p), faceIDList.size());
                                 }
 
                                 vFace = faceIDList.size();
@@ -601,6 +622,9 @@ public class PhotoActivity extends ParentWithNaviActivity {
                 msg.what = MSG_UPLOAD_PHOTO;
                 handler.sendMessage(msg);
             }
+            upload.setVisibility(View.VISIBLE);
+            photo.setVisibility(View.GONE);
+            camera.setVisibility(View.GONE);
         }
     }
 

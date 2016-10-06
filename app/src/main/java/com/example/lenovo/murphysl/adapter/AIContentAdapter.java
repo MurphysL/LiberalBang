@@ -7,23 +7,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.bean.BmobIMConversation;
+import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.v3.listener.UpdateListener;
 
 import com.example.lenovo.murphysl.MyApplication;
+import com.example.lenovo.murphysl.NewChatActivity;
 import com.example.lenovo.murphysl.R;
-import com.example.lenovo.murphysl.UserInfoActivity;
+import com.example.lenovo.murphysl.util.StringUtils;
+import com.example.lenovo.murphysl.view.UserInfoActivity;
 import com.example.lenovo.murphysl.adapter.base.BaseContentAdapter;
 import com.example.lenovo.murphysl.bean.QiangYu;
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.model.QiangYuModel;
+import com.example.lenovo.murphysl.model.UserModel;
 import com.example.lenovo.murphysl.moment.CommentActivity;
 import com.example.lenovo.murphysl.util.ActivityUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -47,8 +56,34 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 		mContext = context;
 	}
 
+
 	@Override
 	public View getConvertView(int position, View convertView, ViewGroup parent) {
+		String[] keyWords = {
+				mContext.getResources().getString(R.string.ac_eat_chinese),
+				mContext.getResources().getString(R.string.ac_eat_buffet_dinner),
+				mContext.getResources().getString(R.string.ac_eat_fast),
+				mContext.getResources().getString(R.string.ac_eat_snack),
+				mContext.getResources().getString(R.string.ac_eat_west),
+
+				mContext.getResources().getString(R.string.ac_bar),
+				mContext.getResources().getString(R.string.ac_entertainment),
+				mContext.getResources().getString(R.string.ac_gym),
+				mContext.getResources().getString(R.string.ac_internet),
+				mContext.getResources().getString(R.string.ac_movie),
+
+				mContext. getResources().getString(R.string.ac_tour_amusement),
+				mContext.getResources().getString(R.string.ac_tour_museum),
+				mContext.getResources().getString(R.string.ac_tour_park),
+				mContext.getResources().getString(R.string.ac_tour_zoo),
+				mContext.getResources().getString(R.string.ac_tour_view),
+
+				mContext.getResources().getString(R.string.ac_play_badminton),
+				mContext.getResources().getString(R.string.ac_play_ball),
+				mContext.getResources().getString(R.string.ac_play_basketball),
+				mContext.getResources().getString(R.string.ac_play_football),
+				mContext.getResources().getString(R.string.ac_play_volleyball)};
+
 		// TODO Auto-generated method stub
 		final ViewHolder viewHolder;
 		if (convertView == null) {
@@ -60,6 +95,8 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 					.findViewById(R.id.user_logo);
 			viewHolder.contentText = (TextView) convertView
 					.findViewById(R.id.content_text);
+			viewHolder.contentMoney = (TextView) convertView
+					.findViewById(R.id.content_money);
 			viewHolder.contentImage = (ImageView) convertView
 					.findViewById(R.id.content_image);
 			viewHolder.love = (TextView) convertView
@@ -67,13 +104,14 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 			viewHolder.comment = (TextView) convertView
 					.findViewById(R.id.item_action_comment);
 			viewHolder.geo = (TextView) convertView.findViewById(R.id.content_geo);
+			viewHolder.help = (Button) convertView.findViewById(R.id.help);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		final QiangYu entity = dataList.get(position);
 		Log.i("user", entity.toString());
-		UserBean user = entity.getAuthor();
+		final UserBean user = entity.getAuthor();
 		if (user == null) {
 			Log.i("user", "USER IS NULL");
 		}
@@ -99,6 +137,45 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 					}
 
 				});
+		if(entity.getState() == 0){
+			viewHolder.help.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if(entity.getState() == 0){
+						viewHolder.help.setBackgroundResource(R.color.color_99);
+						final QiangYu qiangYu = new QiangYu();
+						qiangYu.setState(1);
+						qiangYu.setHelper(UserModel.getInstance().getUser());
+						qiangYu.update(MyApplication.getINSTANCE().getTopActivity(), entity.getObjectId(),
+								new UpdateListener() {
+									@Override
+									public void onSuccess() {
+										//开始对话
+										BmobIMUserInfo info = new BmobIMUserInfo(
+												entity.getAuthor().getObjectId(),entity.getAuthor().getUsername(),entity.getAuthor().getAvatar());
+										BmobIMConversation c = BmobIM.getInstance().startPrivateConversation(info,false,null);
+										Intent intent = new Intent();
+										Bundle bundle = new Bundle();
+										bundle.putSerializable("c", c);
+										bundle.putString("q" , qiangYu.getObjectId());
+										intent.putExtra("com.example.lenovo.murphysl" , bundle);
+										intent.setClass(MyApplication.getINSTANCE().getTopActivity(), NewChatActivity.class);
+										mContext.startActivity(intent);
+									}
+
+									@Override
+									public void onFailure(int i, String s) {
+									}
+								});
+					}else{
+						Toast.makeText(MyApplication.getINSTANCE().getTopActivity()
+								, "已经有人在帮助他了" , Toast.LENGTH_SHORT).show();
+					}
+
+				}
+			});
+		}
+
 		viewHolder.userLogo.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -106,13 +183,16 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 				// TODO Auto-generated method stub
 				QiangYuModel.getInstance().setCurrentQiangYu(entity);
 				Intent intent = new Intent();
-				intent.setClass(MyApplication.getINSTANCE().getTopActivity(),
-						UserInfoActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("u" , user);
+				intent.putExtra("com.example.lenovo.murphysl" , bundle);
+				intent.setClass(MyApplication.getINSTANCE().getTopActivity(), UserInfoActivity.class);
 				mContext.startActivity(intent);
 			}
 		});
 		viewHolder.userName.setText(entity.getAuthor().getUsername());
-		viewHolder.contentText.setText(entity.getContent());
+		viewHolder.contentText.setText(StringUtils.highlight(entity.getContent() , keyWords));
+		viewHolder.contentMoney.setText(entity.getMoney() + "");
 		viewHolder.geo.setText(entity.getGeo());
 		if (null == entity.getContentfigureurl()) {
 			viewHolder.contentImage.setVisibility(View.GONE);
@@ -201,6 +281,7 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 			}
 		});
 
+		viewHolder.comment.setText(entity.getComment() + "个评论");
 		viewHolder.comment.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -225,10 +306,12 @@ public class AIContentAdapter extends BaseContentAdapter<QiangYu> {
 		public ImageView userLogo;
 		public TextView userName;
 		public TextView contentText;
+		public TextView contentMoney;
 		public ImageView contentImage;
 
 		public TextView love;
 		public TextView comment;
 		public TextView geo;
+		public Button help;
 	}
 }

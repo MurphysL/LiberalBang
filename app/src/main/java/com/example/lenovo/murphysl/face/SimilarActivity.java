@@ -1,8 +1,11 @@
 package com.example.lenovo.murphysl.face;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -61,6 +64,16 @@ public class SimilarActivity extends ParentWithNaviActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_similar);
         ButterKnife.bind(this);
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         FacePPDecet.personList(new FacePPDecet.CallBack() {
             @Override
@@ -129,6 +142,7 @@ public class SimilarActivity extends ParentWithNaviActivity {
                                 public void onSuccess(List<UserBean> list) {
                                     String userID = list.get(0).getObjectId();
                                     String url = list.get(0).getAvatar();
+                                    similar.setVisibility(View.VISIBLE);
                                     similar.setText("相似度：" + confidence);
                                     ImageLoader.getInstance().displayImage(
                                             url,

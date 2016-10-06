@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_search"
+    android:background="#FFFFFF"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -31,7 +32,7 @@
             android:layout_height="39dp"
             android:layout_margin="10dp"
             android:layout_marginRight="11dp"
-            android:background="@drawable/btn_login_selector"
+            android:background="@drawable/selector_click"
             android:text="搜索"
             android:textSize="14sp" />
     </LinearLayout>

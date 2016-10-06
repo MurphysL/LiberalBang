@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.example.lenovo.murphysl.ChatActivity;
+import com.example.lenovo.murphysl.NewChatActivity;
 import com.example.lenovo.murphysl.R;
 
 import java.util.List;
@@ -98,7 +99,7 @@ public class PrivateConversation extends Conversation{
     @Override
     public void onClick(Context context) {
         Intent intent = new Intent();
-        intent.setClass(context, ChatActivity.class);
+        intent.setClass(context, NewChatActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("c", conversation);
         if (bundle != null) {

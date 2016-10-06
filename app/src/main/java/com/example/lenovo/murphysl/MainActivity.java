@@ -1,11 +1,14 @@
 package com.example.lenovo.murphysl;
 
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -14,11 +17,12 @@ import com.example.lenovo.murphysl.base.ParentWithNaviFragment;
 import com.example.lenovo.murphysl.bean.UserBean;
 import com.example.lenovo.murphysl.db.NewFriendManager;
 import com.example.lenovo.murphysl.event.RefreshEvent;
-import com.example.lenovo.murphysl.fragments.FourthFragment;
-import com.example.lenovo.murphysl.fragments.NewFirstFragment;
-import com.example.lenovo.murphysl.fragments.SecondFragment;
-import com.example.lenovo.murphysl.fragments.ThirdFragment;
+import com.example.lenovo.murphysl.view.FourthFragment;
+import com.example.lenovo.murphysl.view.FirstFragment;
+import com.example.lenovo.murphysl.view.SecondFragment;
+import com.example.lenovo.murphysl.view.ThirdFragment;
 import com.example.lenovo.murphysl.ui.ChangeColorIconWithText;
+import com.example.lenovo.murphysl.util.ActivityManagerUtils;
 import com.example.lenovo.murphysl.util.IMMLeaks;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,15 +95,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        ActivityManagerUtils.getInstance().addActivity(this);
 
-       /* if (Build.VERSION.SDK_INT >= 21) {
-            View decorView = getWindow().getDecorView();
-            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            decorView.setSystemUiVisibility(option);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-*/
+
         initView();
         initTab();
         initReceiver();
@@ -171,7 +178,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void initView() {
         super.initView();
-        NewFirstFragment f1 = new NewFirstFragment();
+        FirstFragment f1 = new FirstFragment();
         SecondFragment f2 = new SecondFragment();
         ThirdFragment f3 = new ThirdFragment();
         FourthFragment f4 = new FourthFragment();

@@ -17,9 +17,13 @@ import cn.bmob.v3.datatype.BmobFile;
 public class UserBean extends BmobUser {
 
     private String avatar;
-    private BmobFile pic;
+    private String pic;
     private String hobby;
     private String sort;
+    private int success;
+    private String job;
+    private String company;
+    private String prove;
 
     public UserBean(){}
 
@@ -53,11 +57,43 @@ public class UserBean extends BmobUser {
         this.sort = sort;
     }
 
-    public BmobFile getPic() {
+    public String getPic() {
         return pic;
     }
 
-    public void setPic(BmobFile pic) {
+    public void setPic(String pic) {
         this.pic = pic;
+    }
+
+    public int getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(int success) {
+        this.success = success;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getProve() {
+        return prove;
+    }
+
+    public void setProve(String prove) {
+        this.prove = prove;
     }
 }

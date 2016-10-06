@@ -3,9 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
-    android:background="@drawable/top_bar"
+    android:background="@color/green_theme"
     android:gravity="center"
     android:orientation="vertical">
+
 
     <View
         android:id="@+id/v_top"

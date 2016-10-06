@@ -16,6 +16,7 @@ public class MyDate extends BmobObject{
     private UserBean friend;
     private BmobFile photo;
     private Integer star;
+    private QiangYu qiangYu;
 
     public MyDate(){
 
@@ -51,5 +52,13 @@ public class MyDate extends BmobObject{
 
     public void setStar(Integer star) {
         this.star = star;
+    }
+
+    public QiangYu getQiangYu() {
+        return qiangYu;
+    }
+
+    public void setQiangYu(QiangYu qiangYu) {
+        this.qiangYu = qiangYu;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -33,12 +35,10 @@ import android.widget.Toast;
 import com.example.lenovo.murphysl.adapter.ChatAdapter;
 import com.example.lenovo.murphysl.adapter.OnRecyclerViewListener;
 import com.example.lenovo.murphysl.base.ParentWithNaviActivity;
-import com.example.lenovo.murphysl.event.UserEvent;
+import com.example.lenovo.murphysl.view.MapActivity;
 import com.example.lenovo.murphysl.util.Util;
 import com.orhanobut.logger.Logger;
 
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,16 +74,12 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
 
     @Bind(R.id.ll_chat)
     LinearLayout ll_chat;
-
     @Bind(R.id.sw_refresh)
     SwipeRefreshLayout sw_refresh;
-
     @Bind(R.id.rc_view)
     RecyclerView rc_view;
-
     @Bind(R.id.edit_msg)
     EditText edit_msg;
-
     @Bind(R.id.btn_speak)
     Button btn_speak;
     @Bind(R.id.btn_chat_voice)
@@ -92,14 +88,12 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
     Button btn_chat_keyboard;
     @Bind(R.id.btn_chat_send)
     Button btn_chat_send;
-
     @Bind(R.id.layout_more)
     LinearLayout layout_more;
     @Bind(R.id.layout_add)
     LinearLayout layout_add;
     @Bind(R.id.layout_emo)
     LinearLayout layout_emo;
-
     // 语音有关
     @Bind(R.id.layout_record)
     RelativeLayout layout_record;
@@ -121,6 +115,7 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
 
     private String aroundID;
 
+
     @Override
     protected String title() {
         return c.getConversationTitle();
@@ -136,14 +131,14 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
         return new ParentWithNaviActivity.ToolBarListener() {
             @Override
             public void clickLeft() {
-
+                finish();
             }
 
             @Override
             public void clickRight() {
                 Bundle bundle = new Bundle();
                 bundle.putString("ID"  ,aroundID);
-                //startActivity(DateActivity.class,bundle);
+                startActivity(DateActivity.class,bundle);
             }
         };
     }
@@ -159,8 +154,19 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
         initVoiceView();
         initBottomView();
 
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(this.getResources().getColor(R.color.green_theme));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         address = Environment.getExternalStorageDirectory().getPath() + "/temp.png";
     }
+
 
     private void initSwipeLayout(){
         sw_refresh.setEnabled(true);
@@ -713,6 +719,16 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+    }
+
+    @Override
     protected void onPause() {
         //移除页面消息监听器
         BmobIM.getInstance().removeMessageListHandler(this);
@@ -720,7 +736,13 @@ public class ChatActivity extends ParentWithNaviActivity implements ObseverListe
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
+
         //清理资源
         if(recordManager!=null){
             recordManager.clear();

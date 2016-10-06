@@ -34,6 +34,7 @@
             android:id="@+id/tv_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="15sp"
             android:layout_marginLeft="@dimen/margin_5"
             style="@style/style_text_1e1e1e"
             android:gravity="left|center"

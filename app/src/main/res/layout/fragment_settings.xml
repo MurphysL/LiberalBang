@@ -228,7 +228,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:text="退出登录"
-        android:background="@drawable/selector_logout"
+        android:background="@drawable/selector_click"
         android:gravity="center"
         android:paddingTop="12dip"
         android:paddingBottom="12dip"

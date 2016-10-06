@@ -31,7 +31,7 @@ public class ContactAdapter extends BaseRecyclerAdapter<Friend> {
         if(holder.layoutId== R.layout.item_contact){
             UserBean user =friend.getFriendUser();
             //好友头像
-            holder.setImageView(user == null ? null : user.getAvatar(), R.mipmap.fortress, R.id.iv_recent_avatar);
+            holder.setImageView(user == null ? null : user.getAvatar(), R.mipmap.niyou, R.id.iv_recent_avatar);
             //好友名称
             holder.setText(R.id.tv_recent_name,user==null?"未知":user.getUsername());
         }else if(holder.layoutId==R.layout.header_new_friend){

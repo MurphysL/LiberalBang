@@ -30,7 +30,7 @@ public class ConversationAdapter extends BaseRecyclerAdapter<Conversation> {
         Object obj = conversation.getAvatar();
         if(obj instanceof String){
             String avatar=(String)obj;
-            holder.setImageView(avatar, R.mipmap.fortress, R.id.iv_recent_avatar);
+            holder.setImageView(avatar, R.mipmap.niyou, R.id.iv_recent_avatar);
         }else{
             int defaultRes = (int)obj;
             holder.setImageView(null, defaultRes, R.id.iv_recent_avatar);

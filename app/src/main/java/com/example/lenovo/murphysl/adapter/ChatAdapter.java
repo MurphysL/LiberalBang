@@ -24,9 +24,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     //图片
     private final int TYPE_SEND_IMAGE = 2;
     private final int TYPE_RECEIVER_IMAGE = 3;
-    //位置
-    private final int TYPE_SEND_LOCATION = 4;
-    private final int TYPE_RECEIVER_LOCATION = 5;
     //语音
     private final int TYPE_SEND_VOICE =6;
     private final int TYPE_RECEIVER_VOICE = 7;
@@ -123,16 +120,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             return new SendTextHolder(parent.getContext(), parent,c,onRecyclerViewListener);
         } else if (viewType == TYPE_SEND_IMAGE) {
             return new SendImageHolder(parent.getContext(), parent,c,onRecyclerViewListener);
-        } else if (viewType == TYPE_SEND_LOCATION) {
-            return new SendLocationHolder(parent.getContext(), parent,c,onRecyclerViewListener);
         } else if (viewType == TYPE_SEND_VOICE) {
             return new SendVoiceHolder(parent.getContext(), parent,c,onRecyclerViewListener);
         } else if (viewType == TYPE_RECEIVER_TXT) {
             return new ReceiveTextHolder(parent.getContext(), parent,onRecyclerViewListener);
         } else if (viewType == TYPE_RECEIVER_IMAGE) {
             return new ReceiveImageHolder(parent.getContext(), parent,onRecyclerViewListener);
-        } else if (viewType == TYPE_RECEIVER_LOCATION) {
-            return new ReceiveLocationHolder(parent.getContext(), parent,onRecyclerViewListener);
         } else if (viewType == TYPE_RECEIVER_VOICE) {
             return new ReceiveVoiceHolder(parent.getContext(), parent,onRecyclerViewListener);
         } else if (viewType == TYPE_SEND_VIDEO) {
@@ -179,8 +172,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         BmobIMMessage message = msgs.get(position);
         if(message.getMsgType().equals(BmobIMMessageType.IMAGE.getType())){
             return message.getFromId().equals(currentUid) ? TYPE_SEND_IMAGE: TYPE_RECEIVER_IMAGE;
-        }else if(message.getMsgType().equals(BmobIMMessageType.LOCATION.getType())){
-            return message.getFromId().equals(currentUid) ? TYPE_SEND_LOCATION: TYPE_RECEIVER_LOCATION;
         }else if(message.getMsgType().equals(BmobIMMessageType.VOICE.getType())){
             return message.getFromId().equals(currentUid) ? TYPE_SEND_VOICE: TYPE_RECEIVER_VOICE;
         }else if(message.getMsgType().equals(BmobIMMessageType.TEXT.getType())){

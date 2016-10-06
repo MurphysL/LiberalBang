@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/include_navi" />
+
+
+    <RelativeLayout
+        android:id="@+id/personal_icon"
+        android:layout_width="fill_parent"
+        android:layout_height="80dp" >
+
+        <TextView
+            android:id="@+id/personal_icon_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dip"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingRight="8dip"
+            android:text="真实头像:"
+            android:textColor="#787876"
+            android:textSize="16.0sp" />
+
+
+        <ImageView
+            android:id="@+id/personal_icon_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/personal_icon_tips"
+            android:contentDescription="@null"
+            android:src="@drawable/true_face"
+            android:layout_margin="8dip"/>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="17.0dip"
+            android:contentDescription="@null"
+            android:src="@drawable/icon_back_blue" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1.0dip"
+            android:layout_alignParentBottom="true"
+            android:background="#E8E8E8" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/personal_job"
+        android:layout_width="fill_parent"
+        android:layout_height="80dp" >
+
+        <TextView
+            android:id="@+id/personal_job_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dip"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingRight="8dip"
+            android:text="专业认证:"
+            android:textColor="#787876"
+            android:textSize="16.0sp" />
+
+
+        <ImageView
+            android:id="@+id/personal_job_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/personal_job_tips"
+            android:contentDescription="@null"
+            android:src="@drawable/job"
+            android:layout_margin="8dip"/>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="17.0dip"
+            android:contentDescription="@null"
+            android:src="@drawable/icon_back_blue" />
+    </RelativeLayout>
+
+</LinearLayout>

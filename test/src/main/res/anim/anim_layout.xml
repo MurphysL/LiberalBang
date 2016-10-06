@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- delay           动画延迟时间
+     animationOrder  子元素动画顺序-->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animationOrder="normal"
+    android:animation="@anim/translate"
+    android:delay="0.5">
+</layoutAnimation>

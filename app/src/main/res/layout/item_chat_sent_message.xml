@@ -32,6 +32,9 @@
 
         <TextView
             android:id="@+id/tv_message"
+            android:text="lalal"
+            android:textSize="15sp"
+            android:textColor="@color/green_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/style_text_white"
@@ -64,7 +67,7 @@
 
         <TextView
             android:id="@+id/tv_send_status"
-            android:textColor="@color/color_chat_send_status"
+            android:textColor="@color/green_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"

@@ -57,6 +57,7 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
     Button btdecet;
     @Bind(R.id.get_upload)
     Button getUpload;
+
     private Button get_image;
     private Button decet;
     private ImageView imageView;
@@ -124,8 +125,8 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
                         @Override
                         public void success(JSONObject result) {
                             log("训练完成");
-                            startActivity(MainActivity.class, null, true);
-                            finish();
+//                            startActivity(MainActivity.class, null, true);
+//                            finish();
                         }
 
                         @Override
@@ -140,8 +141,8 @@ public class UploadAvatarActivity extends BaseActivity implements View.OnClickLi
                         @Override
                         public void onSuccess() {
                             newUrl = file.getUrl();
-                            user.setPic(file);
-                            user.setAvatar(newUrl);
+                            user.setPic(newUrl);
+                            //user.setAvatar(newUrl);
                             log("newUrl:" + newUrl);
                             user.update(UploadAvatarActivity.this, new UpdateListener() {
                                 @Override
