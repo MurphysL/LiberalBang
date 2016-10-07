@@ -57,6 +57,7 @@ public class LoginActivity extends BaseActivity{
                     UserBean user = (UserBean) o;
                     BmobIM.getInstance().updateUserInfo(new BmobIMUserInfo(user.getObjectId(), user.getUsername(), user.getAvatar()));
                     startActivity(MainActivity.class, null, true);
+                    log("agkaga");
                     finish();
                 } else {
                     toast(e.getMessage() + "(" + e.getErrorCode() + ")");

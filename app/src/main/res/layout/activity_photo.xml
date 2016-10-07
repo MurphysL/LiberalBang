@@ -129,7 +129,7 @@
 
         <Button
             android:id="@+id/upload"
-            android:text="上传"
+            android:text="识别支付"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent" />
@@ -142,8 +142,9 @@
             android:layout_height="match_parent" />
 
         <Button
-            android:id="@+id/share"
-            android:text="分享"
+            android:visibility="gone"
+            android:id="@+id/finish"
+            android:text="帮助完成"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent" />

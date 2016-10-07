@@ -54,7 +54,6 @@ import butterknife.OnClick;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
 /**
@@ -65,7 +64,6 @@ import cn.bmob.v3.listener.UploadFileListener;
  */
 
 public class PhotoActivity extends ParentWithNaviActivity {
-
 
     @Bind(R.id.image)
     ImageView image;
@@ -85,14 +83,14 @@ public class PhotoActivity extends ParentWithNaviActivity {
     private static final int MSG_VETIFY = 0;
 
     private final UserBean user = UserModel.getInstance().getUser();
-    @Bind(R.id.share)
-    Button share;
     @Bind(R.id.linear)
     LinearLayout upload;
     @Bind(R.id.photo)
     LinearLayout photo;
     @Bind(R.id.camera)
     LinearLayout camera;
+    @Bind(R.id.finish)
+    Button finish;
 
     private Bitmap mPhotoImage;
     private String s;
@@ -146,7 +144,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
 
             @Override
             public void error(FaceppParseException e) {
-                log("错误");
+                log("错误" + e);
             }
         });
 
@@ -233,7 +231,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
                         image.setImageBitmap(mPhotoImage);
                         sendPhoto(nameList);
                     }
-
+                    finish.setVisibility(View.VISIBLE);
                     break;
                 case MSG_IDENTIFY:
                     log("辨识成功");
@@ -251,32 +249,21 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     }
                     break;
                 case MSG_UPLOAD_PHOTO:
-//                    final BmobFile file = new BmobFile(new File(s));
-//                    file.upload(PhotoActivity.this, new UploadFileListener() {
-//                        @Override
-//                        public void onSuccess() {
-//                            user.setPic(file);
-//                            user.update(PhotoActivity.this, new UpdateListener() {
-//                                @Override
-//                                public void onSuccess() {
-//                                    url = file.getFileUrl(PhotoActivity.this);
-//                                    toast("原图已上传至云端");
-//                                    log("原图上传成功 URL" + url);
-//                                }
-//
-//                                @Override
-//                                public void onFailure(int i, String s) {
-//                                    log("图片上传失败" + s);
-//                                }
-//                            });
-//                        }
-//
-//                        @Override
-//                        public void onFailure(int i, String s) {
-//                            log("头像上传错误" + s);
-//                        }
-//                    });
-//                    break;
+                    final BmobFile file = new BmobFile(new File(s));
+                    file.upload(PhotoActivity.this, new UploadFileListener() {
+                        @Override
+                        public void onSuccess() {
+                            url = file.getUrl();
+                            toast("原图已上传至云端");
+                            log("原图上传成功 URL" + url);
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+                            log("头像上传错误" + s);
+                        }
+                    });
+                    break;
                 case MSG_SUCCESS:
                     JSONObject rs = (JSONObject) msg.obj;
                     log("辨识人脸成功");
@@ -295,18 +282,23 @@ public class PhotoActivity extends ParentWithNaviActivity {
                     }
                     break;
                 case MSG_TRAIN:
-                    FacePPDecet.verifyTrain(UserModel.getInstance().getUser().getUsername(), new FacePPDecet.CallBack() {
-                        @Override
-                        public void success(JSONObject result) {
-                            toast("verifyTrain完成");
-                            log("verifyTrain完成");
-                        }
+                    log("verifyTrain完成" + personList.size());
+                    for (int i = 0; i < personList.size(); i++) {
+                        log("username" + personList.get(i));
+                        FacePPDecet.verifyTrain(personList.get(i), new FacePPDecet.CallBack() {
+                            @Override
+                            public void success(JSONObject result) {
+                                toast("verifyTrain完成");
+                                log("verifyTrain完成");
+                            }
 
-                        @Override
-                        public void error(FaceppParseException e) {
-                            log("训练失败");
-                        }
-                    });
+                            @Override
+                            public void error(FaceppParseException e) {
+                                log("训练失败");
+                            }
+                        });
+                    }
+
                     break;
                 case MSG_PERSON_LIST:
                     FacePPDecet.personList(new FacePPDecet.CallBack() {
@@ -354,7 +346,7 @@ public class PhotoActivity extends ParentWithNaviActivity {
 
                                 @Override
                                 public void error(FaceppParseException e) {
-
+                                    log("添加Face失败：" + e);
                                 }
                             });
 
@@ -507,13 +499,9 @@ public class PhotoActivity extends ParentWithNaviActivity {
         return bitmap;
     }
 
-    @OnClick({R.id.camera, R.id.photo, R.id.upload, R.id.share})
+    @OnClick({R.id.camera, R.id.photo, R.id.upload})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.share:
-                share.setVisibility(View.VISIBLE);
-                toast("已发送");
-                break;
             case R.id.camera:
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 Uri uri = Uri.fromFile(new File(address));
@@ -629,4 +617,9 @@ public class PhotoActivity extends ParentWithNaviActivity {
     }
 
 
+    @OnClick(R.id.finish)
+    public void onFinishClick() {
+        toast("支付成功");
+        finish();
+    }
 }

@@ -64,7 +64,7 @@ public class RegisterActivity extends BaseActivity {
                             if (e == null) {
                                 UserBean user = (UserBean) o;
                                 BmobIM.getInstance().updateUserInfo(new BmobIMUserInfo(user.getObjectId(), user.getUsername(), user.getAvatar()));
-                                startActivity(MainActivity.class, null, true);
+                                startActivity(LoginActivity.class, null, true);
                                 finish();
                             } else {
                                 toast(e.getMessage() + "(" + e.getErrorCode() + ")");
